@@ -18,5 +18,8 @@ inherits = "release"
 opt-level = "s"
 strip = "debuginfo"
 
+[target.wasm32-unknown-unknown]
+runner = "wasm-server-runner"
+
 [dependencies]
 bevy = "0.16.1"
