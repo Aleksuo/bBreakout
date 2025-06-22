@@ -1,6 +1,6 @@
 use bevy::{
-    color::palettes::css::{BLUE, ORANGE},
-    prelude::*
+    color::palettes::css::{BLUE, ORANGE, WHITE_SMOKE},
+    prelude::*,
 };
 
 const PLAYER_MOVE_SPEED: f32 = 200.0;
@@ -13,6 +13,8 @@ const TILES_PER_ROW: u32 = 20;
 const TILES_PER_COLUMN: u32 = 10;
 const TILE_WIDTH: f32 = 39.5;
 const TILE_GAP: f32 = 5.;
+const BALL_RADIUS: f32 = 5.;
+const BALL_START_VELOCITY: Vec2 = Vec2::new(0., -150.);
 
 #[derive(Component)]
 struct Person;
@@ -28,7 +30,10 @@ struct Wall;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_systems(Startup, (add_camera, add_walls, add_tiles, add_paddle))
+        .add_systems(
+            Startup,
+            (add_camera, add_walls, add_tiles, add_paddle, add_ball),
+        )
         .add_systems(FixedUpdate, (handle_input, move_moving).chain())
         .run();
 }
@@ -77,7 +82,7 @@ fn add_tiles(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let x_start = LEFT_WALL_X + (BLOCK_THICKNESS / 2.) + (TILE_WIDTH/2.);
+    let x_start = LEFT_WALL_X + (BLOCK_THICKNESS / 2.) + (TILE_WIDTH / 2.);
     let mut x_pos = x_start.clone();
     let mut y_pos = 345.;
     for _i in 0..TILES_PER_COLUMN {
@@ -113,6 +118,20 @@ fn add_paddle(
         MeshMaterial2d(materials.add(Color::from(ORANGE))),
     ));
 }
+
+fn add_ball(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    commands.spawn((
+        Transform::from_xyz(0., 0., 0.),
+        Velocity(BALL_START_VELOCITY),
+        Mesh2d(meshes.add(Circle::new(BALL_RADIUS))),
+        MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
+    ));
+}
+
 fn move_moving(time: Res<Time>, mut query: Query<(&mut Transform, &Velocity)>) {
     for (mut transform, velocity) in &mut query {
         let change = velocity.0 * time.delta_secs();
