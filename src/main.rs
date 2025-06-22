@@ -1,6 +1,8 @@
 use bevy::{
     color::palettes::css::{BLUE, ORANGE, WHITE_SMOKE},
+    math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume},
     prelude::*,
+    render::mesh::MeshAabb,
 };
 
 const PLAYER_MOVE_SPEED: f32 = 200.0;
@@ -27,6 +29,32 @@ struct Velocity(Vec2);
 
 #[derive(Component)]
 struct Wall;
+
+#[derive(Component)]
+struct Tile;
+
+#[derive(Component)]
+struct Ball;
+
+#[derive(Component)]
+struct BC(BoundingCircle);
+
+#[derive(Component)]
+struct AABB(Aabb2d);
+
+#[derive(Component)]
+struct Dynamic;
+
+#[derive(Component)]
+struct Static;
+
+enum Side {
+    Top,
+    Bottom,
+    Left,
+    Right,
+}
+
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
@@ -34,7 +62,16 @@ fn main() {
             Startup,
             (add_camera, add_walls, add_tiles, add_paddle, add_ball),
         )
-        .add_systems(FixedUpdate, (handle_input, move_moving).chain())
+        .add_systems(
+            FixedUpdate,
+            (
+                handle_input,
+                move_moving,
+                update_colliders,
+                handle_collisions,
+            )
+                .chain(),
+        )
         .run();
 }
 
@@ -47,6 +84,7 @@ fn add_walls(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     // Left wall
+
     commands.spawn((
         Wall,
         Transform::from_xyz(LEFT_WALL_X, 0.0, 0.0),
@@ -55,6 +93,11 @@ fn add_walls(
             y: WALL_LENGTH,
         }))),
         MeshMaterial2d(materials.add(Color::from(ORANGE))),
+        Static,
+        AABB(Aabb2d::new(
+            Vec2::new(LEFT_WALL_X, 0.0),
+            Vec2::new(BLOCK_THICKNESS / 2., WALL_LENGTH / 2.),
+        )),
     ));
     // Right wall
     commands.spawn((
@@ -65,6 +108,11 @@ fn add_walls(
             y: WALL_LENGTH,
         }))),
         MeshMaterial2d(materials.add(Color::from(ORANGE))),
+        Static,
+        AABB(Aabb2d::new(
+            Vec2::new(RIGHT_WALL_X, 0.0),
+            Vec2::new(BLOCK_THICKNESS / 2., WALL_LENGTH / 2.),
+        )),
     ));
     commands.spawn((
         Wall,
@@ -74,6 +122,11 @@ fn add_walls(
             y: BLOCK_THICKNESS,
         }))),
         MeshMaterial2d(materials.add(Color::from(ORANGE))),
+        Static,
+        AABB(Aabb2d::new(
+            Vec2::new(0., 355.),
+            Vec2::new(WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
+        )),
     ));
 }
 
@@ -94,6 +147,11 @@ fn add_tiles(
                     y: BLOCK_THICKNESS,
                 }))),
                 MeshMaterial2d(materials.add(Color::from(BLUE))),
+                Static,
+                AABB(Aabb2d::new(
+                    Vec2::new(x_pos, y_pos),
+                    Vec2::new((TILE_WIDTH - TILE_GAP) / 2., BLOCK_THICKNESS / 2.),
+                )),
             ));
             x_pos += TILE_WIDTH;
         }
@@ -115,7 +173,12 @@ fn add_paddle(
             x: PLAYER_PADDLE_LENGTH,
             y: BLOCK_THICKNESS,
         }))),
+        Dynamic,
         MeshMaterial2d(materials.add(Color::from(ORANGE))),
+        AABB(Aabb2d::new(
+            Vec2::new(0., -300.),
+            Vec2::new(PLAYER_PADDLE_LENGTH / 2., BLOCK_THICKNESS / 2.),
+        )),
     ));
 }
 
@@ -129,7 +192,62 @@ fn add_ball(
         Velocity(BALL_START_VELOCITY),
         Mesh2d(meshes.add(Circle::new(BALL_RADIUS))),
         MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
+        Ball,
+        BC(BoundingCircle::new(Vec2::new(0., 0.), BALL_RADIUS)),
+        Dynamic,
     ));
+}
+
+fn handle_collisions(mut bc_query: Query<(&BC, &mut Velocity)>, aabb_query: Query<(&AABB)>) {
+    for (bc, mut vel) in &mut bc_query {
+        for (aabb) in aabb_query {
+            if bc.0.intersects(&aabb.0) {
+                let collision_side = get_ball_collision_side(&bc, &aabb);
+                vel.0 = match collision_side {
+                    Side::Bottom => vel.0.reflect(Vec2::new(0., -1.)),
+                    Side::Top => vel.0.reflect(Vec2::new(0., 1.)),
+                    Side::Left => vel.0.reflect(Vec2::new(-1., 0.)),
+                    Side::Right => vel.0.reflect(Vec2::new(1., 0.)),
+                }
+            }
+        }
+    }
+}
+
+fn get_ball_collision_side(bc: &BC, aabb: &AABB) -> Side {
+    let closest = aabb.0.closest_point(bc.0.center);
+    let delta = bc.0.center - closest;
+    if delta.x > delta.y.abs() {
+        if delta.x.is_sign_negative() {
+            Side::Left
+        } else {
+            Side::Right
+        }
+    } else {
+        if delta.y.is_sign_negative() {
+            Side::Bottom
+        } else {
+            Side::Top
+        }
+    }
+}
+
+fn update_colliders(
+    meshes: ResMut<Assets<Mesh>>,
+    bc_query: Query<(&mut BC, &Transform, &Mesh2d), With<Dynamic>>,
+    aabb_query: Query<(&mut AABB, &Transform, &Mesh2d), With<Dynamic>>,
+) {
+    for (mut bc, transform, _) in bc_query {
+        let center = transform.translation.xy();
+        bc.0 = BoundingCircle::new(center, BALL_RADIUS);
+    }
+    for (mut aabb, transform, mesh) in aabb_query {
+        let computed_aabb = meshes.get(mesh.id()).unwrap().compute_aabb().unwrap();
+        aabb.0 = Aabb2d::new(
+            transform.translation.xy(),
+            computed_aabb.half_extents.truncate(),
+        );
+    }
 }
 
 fn move_moving(time: Res<Time>, mut query: Query<(&mut Transform, &Velocity)>) {
@@ -144,7 +262,7 @@ fn handle_input(
     mut query: Query<(&mut Velocity, &mut Transform), With<PlayerPaddle>>,
 ) {
     let mut vel: f32 = 0.0;
-    let (mut velocity_comp, mut transform_comp) = query.single_mut().unwrap();
+    let (mut velocity_comp, transform_comp) = query.single_mut().unwrap();
     if keys.pressed(KeyCode::KeyA) {
         vel -= PLAYER_MOVE_SPEED;
     }
