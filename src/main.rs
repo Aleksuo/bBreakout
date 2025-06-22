@@ -1,4 +1,7 @@
-use bevy::{color::palettes::css::ORANGE, prelude::*};
+use bevy::{
+    color::palettes::css::{BLUE, ORANGE},
+    prelude::*
+};
 
 const PLAYER_MOVE_SPEED: f32 = 200.0;
 const PLAYER_PADDLE_LENGTH: f32 = 50.;
@@ -6,6 +9,10 @@ const BLOCK_THICKNESS: f32 = 10.;
 const LEFT_WALL_X: f32 = -400.;
 const RIGHT_WALL_X: f32 = 400.;
 const WALL_LENGTH: f32 = 800.;
+const TILES_PER_ROW: u32 = 20;
+const TILES_PER_COLUMN: u32 = 10;
+const TILE_WIDTH: f32 = 39.5;
+const TILE_GAP: f32 = 5.;
 
 #[derive(Component)]
 struct Person;
@@ -21,7 +28,7 @@ struct Wall;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_systems(Startup, (add_camera, add_walls, add_paddle))
+        .add_systems(Startup, (add_camera, add_walls, add_tiles, add_paddle))
         .add_systems(FixedUpdate, (handle_input, move_moving).chain())
         .run();
 }
@@ -65,6 +72,31 @@ fn add_walls(
     ));
 }
 
+fn add_tiles(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    let x_start = LEFT_WALL_X + (BLOCK_THICKNESS / 2.) + (TILE_WIDTH/2.);
+    let mut x_pos = x_start.clone();
+    let mut y_pos = 345.;
+    for _i in 0..TILES_PER_COLUMN {
+        for _j in 0..TILES_PER_ROW {
+            commands.spawn((
+                Transform::from_xyz(x_pos, y_pos, 0.),
+                Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
+                    x: TILE_WIDTH - TILE_GAP,
+                    y: BLOCK_THICKNESS,
+                }))),
+                MeshMaterial2d(materials.add(Color::from(BLUE))),
+            ));
+            x_pos += TILE_WIDTH;
+        }
+        y_pos -= BLOCK_THICKNESS + TILE_GAP;
+        x_pos = x_start.clone();
+    }
+}
+
 fn add_paddle(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -103,14 +135,14 @@ fn handle_input(
     let clamped = clamp_paddle_loc(transform_comp);
     if clamped {
         velocity_comp.0.x = 0.;
-    }else {
-          velocity_comp.0.x = vel;
+    } else {
+        velocity_comp.0.x = vel;
     }
 }
 
 fn clamp_paddle_loc(mut transform: Mut<'_, Transform>) -> bool {
     let mut pos = transform.translation;
-    let half_paddle_length = PLAYER_PADDLE_LENGTH /2.;
+    let half_paddle_length = PLAYER_PADDLE_LENGTH / 2.;
     let half_block_thickness = BLOCK_THICKNESS / 2.;
     let left_max = LEFT_WALL_X + half_block_thickness + half_paddle_length;
     if pos.x < left_max {
