@@ -1,6 +1,6 @@
 use bevy::{
     color::palettes::css::{BLUE, ORANGE, WHITE_SMOKE},
-    math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume},
+    math::bounding::{Aabb2d, BoundingCircle, BoundingVolume, IntersectsVolume},
     prelude::*,
     render::mesh::MeshAabb,
 };
@@ -48,6 +48,7 @@ struct Dynamic;
 #[derive(Component)]
 struct Static;
 
+#[derive(PartialEq)]
 enum Side {
     Top,
     Bottom,
@@ -198,17 +199,36 @@ fn add_ball(
     ));
 }
 
-fn handle_collisions(mut bc_query: Query<(&BC, &mut Velocity)>, aabb_query: Query<(&AABB)>) {
-    for (bc, mut vel) in &mut bc_query {
-        for (aabb) in aabb_query {
+fn handle_collisions(
+    mut bc_query: Query<(&mut BC, &mut Velocity, &mut Transform)>,
+    aabb_query: Query<&AABB>,
+) {
+    for (mut bc, mut vel, mut transform) in &mut bc_query {
+        for aabb in aabb_query {
             if bc.0.intersects(&aabb.0) {
-                let collision_side = get_ball_collision_side(&bc, &aabb);
-                vel.0 = match collision_side {
-                    Side::Bottom => vel.0.reflect(Vec2::new(0., -1.)),
-                    Side::Top => vel.0.reflect(Vec2::new(0., 1.)),
-                    Side::Left => vel.0.reflect(Vec2::new(-1., 0.)),
-                    Side::Right => vel.0.reflect(Vec2::new(1., 0.)),
+                let epsilon = 0.01;
+                let contact = aabb.0.closest_point(bc.0.center);
+                let mut delta = bc.0.center - contact;
+                let mut dist_sq = delta.length_squared();
+                // Center is inside the rectangle, calculate side and return the corresponging unit vector
+                if dist_sq == 0. {
+                    delta = match get_ball_collision_side(&bc, &aabb) {
+                        Side::Left => Vec2::NEG_X,
+                        Side::Right => Vec2::X,
+                        Side::Top => Vec2::Y,
+                        Side::Bottom => Vec2::NEG_Y,
+                    };
+                    dist_sq = 1.0;
                 }
+                let dist = dist_sq.sqrt();
+                let penetration = bc.0.radius() - dist;
+                let normal = delta / dist;
+
+                // Move the ball back outside the rectangle to prevent any wierd behavior
+                transform.translation += (penetration + epsilon) * normal.normalize().extend(0.0);
+                bc.0.center = transform.translation.truncate();
+
+                vel.0 = vel.0.reflect(normal);
             }
         }
     }
@@ -217,7 +237,7 @@ fn handle_collisions(mut bc_query: Query<(&BC, &mut Velocity)>, aabb_query: Quer
 fn get_ball_collision_side(bc: &BC, aabb: &AABB) -> Side {
     let closest = aabb.0.closest_point(bc.0.center);
     let delta = bc.0.center - closest;
-    if delta.x > delta.y.abs() {
+    if delta.x.abs() > delta.y.abs() {
         if delta.x.is_sign_negative() {
             Side::Left
         } else {
