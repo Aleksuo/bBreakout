@@ -148,6 +148,7 @@ fn add_tiles(
                     y: BLOCK_THICKNESS,
                 }))),
                 MeshMaterial2d(materials.add(Color::from(BLUE))),
+                Tile,
                 Static,
                 AABB(Aabb2d::new(
                     Vec2::new(x_pos, y_pos),
@@ -200,11 +201,12 @@ fn add_ball(
 }
 
 fn handle_collisions(
+    mut commands: Commands,
     mut bc_query: Query<(&mut BC, &mut Velocity, &mut Transform)>,
-    aabb_query: Query<&AABB>,
+    aabb_query: Query<(Entity, &AABB, Option<&Tile>)>,
 ) {
     for (mut bc, mut vel, mut transform) in &mut bc_query {
-        for aabb in aabb_query {
+        for (entity, aabb, option_tile) in aabb_query {
             if bc.0.intersects(&aabb.0) {
                 let epsilon = 0.01;
                 let contact = aabb.0.closest_point(bc.0.center);
@@ -229,6 +231,10 @@ fn handle_collisions(
                 bc.0.center = transform.translation.truncate();
 
                 vel.0 = vel.0.reflect(normal);
+
+                if option_tile.is_some() {
+                    commands.entity(entity).despawn();
+                }
             }
         }
     }
