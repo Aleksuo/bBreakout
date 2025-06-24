@@ -68,9 +68,7 @@ pub(super) fn plugin(app: &mut App) {
         .insert_resource(Score(0))
         .add_systems(
             Startup,
-            (
-                add_camera, add_walls, add_tiles, add_paddle, add_ball, add_ui,
-            ),
+            (add_walls, add_tiles, add_paddle, add_ball, add_ui),
         )
         .add_systems(
             FixedUpdate,
@@ -85,9 +83,6 @@ pub(super) fn plugin(app: &mut App) {
         .add_systems(Update, update_score_ui);
 }
 
-fn add_camera(mut commands: Commands) {
-    commands.spawn((Camera2d,));
-}
 fn add_walls(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
