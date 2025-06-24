@@ -56,12 +56,21 @@ enum Side {
     Right,
 }
 
+#[derive(Resource, DerefMut, Deref)]
+struct Score(u32);
+
+#[derive(Component)]
+struct ScoreTextUI;
+
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
+        .insert_resource(Score(0))
         .add_systems(
             Startup,
-            (add_camera, add_walls, add_tiles, add_paddle, add_ball),
+            (
+                add_camera, add_walls, add_tiles, add_paddle, add_ball, add_ui,
+            ),
         )
         .add_systems(
             FixedUpdate,
@@ -73,6 +82,7 @@ fn main() {
             )
                 .chain(),
         )
+        .add_systems(Update, update_score_ui)
         .run();
 }
 
@@ -200,8 +210,29 @@ fn add_ball(
     ));
 }
 
+fn add_ui(mut commands: Commands) {
+    commands.spawn((
+        Node {
+            position_type: PositionType::Absolute,
+            top: Val::Px(5.0),
+            left: Val::Px(5.0),
+            ..default()
+        },
+        children![(
+            ScoreTextUI,
+            Text::new("Score: 0"),
+            TextShadow::default(),
+            Node {
+                position_type: PositionType::Relative,
+                ..default()
+            }
+        )],
+    ));
+}
+
 fn handle_collisions(
     mut commands: Commands,
+    mut score_res: ResMut<Score>,
     mut bc_query: Query<(&mut BC, &mut Velocity, &mut Transform)>,
     aabb_query: Query<(Entity, &AABB, Option<&Tile>)>,
 ) {
@@ -234,6 +265,7 @@ fn handle_collisions(
 
                 if option_tile.is_some() {
                     commands.entity(entity).despawn();
+                    score_res.0 += 1;
                 }
             }
         }
@@ -320,4 +352,11 @@ fn clamp_paddle_loc(mut transform: Mut<'_, Transform>) -> bool {
         return true;
     }
     return false;
+}
+
+fn update_score_ui(score_res: Res<Score>, mut text_query: Single<&mut Text, With<ScoreTextUI>>) {
+    if !score_res.is_changed() {
+        return;
+    }
+    text_query.0 = format!("Score: {}", score_res.0);
 }
