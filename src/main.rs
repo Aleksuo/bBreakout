@@ -1,6 +1,6 @@
 use bevy::{
     color::palettes::css::{BLUE, ORANGE, WHITE_SMOKE},
-    math::bounding::{Aabb2d, BoundingCircle, BoundingVolume, IntersectsVolume},
+    math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume},
     prelude::*,
     render::mesh::MeshAabb,
 };
