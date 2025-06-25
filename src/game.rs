@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use bevy::{
-    color::palettes::css::{BLUE, ORANGE},
+    color::palettes::css::BLUE,
     math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume},
     render::mesh::MeshAabb,
 };
@@ -9,11 +9,9 @@ use bevy::{
 mod ball;
 mod common;
 mod player;
+mod wall;
 
 use common::{components::*, constants::*, system_sets::*};
-
-#[derive(Component)]
-struct Wall;
 
 #[derive(Component)]
 struct Tile;
@@ -33,10 +31,10 @@ struct Score(u32);
 struct ScoreTextUI;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((DefaultPlugins, player::plugin, ball::plugin))
+    app.add_plugins((DefaultPlugins, player::plugin, ball::plugin, wall::plugin))
         .configure_sets(FixedUpdate, InputSet.before(TempSet))
         .insert_resource(Score(0))
-        .add_systems(Startup, (add_walls, add_tiles, add_ui))
+        .add_systems(Startup, (add_tiles, add_ui))
         .add_systems(
             FixedUpdate,
             (move_moving, update_colliders, handle_collisions)
@@ -44,58 +42,6 @@ pub(super) fn plugin(app: &mut App) {
                 .in_set(TempSet),
         )
         .add_systems(Update, update_score_ui);
-}
-
-fn add_walls(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    // Left wall
-
-    commands.spawn((
-        Wall,
-        Transform::from_xyz(LEFT_WALL_X, 0.0, 0.0),
-        Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
-            x: BLOCK_THICKNESS,
-            y: WALL_LENGTH,
-        }))),
-        MeshMaterial2d(materials.add(Color::from(ORANGE))),
-        Static,
-        AABB(Aabb2d::new(
-            Vec2::new(LEFT_WALL_X, 0.0),
-            Vec2::new(BLOCK_THICKNESS / 2., WALL_LENGTH / 2.),
-        )),
-    ));
-    // Right wall
-    commands.spawn((
-        Wall,
-        Transform::from_xyz(RIGHT_WALL_X, 0.0, 0.0),
-        Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
-            x: BLOCK_THICKNESS,
-            y: WALL_LENGTH,
-        }))),
-        MeshMaterial2d(materials.add(Color::from(ORANGE))),
-        Static,
-        AABB(Aabb2d::new(
-            Vec2::new(RIGHT_WALL_X, 0.0),
-            Vec2::new(BLOCK_THICKNESS / 2., WALL_LENGTH / 2.),
-        )),
-    ));
-    commands.spawn((
-        Wall,
-        Transform::from_xyz(0., 355., 0.0),
-        Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
-            x: WALL_LENGTH,
-            y: BLOCK_THICKNESS,
-        }))),
-        MeshMaterial2d(materials.add(Color::from(ORANGE))),
-        Static,
-        AABB(Aabb2d::new(
-            Vec2::new(0., 355.),
-            Vec2::new(WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
-        )),
-    ));
 }
 
 fn add_tiles(
