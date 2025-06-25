@@ -6,27 +6,10 @@ use bevy::{
     render::mesh::MeshAabb,
 };
 
-const PLAYER_MOVE_SPEED: f32 = 200.0;
-const PLAYER_PADDLE_LENGTH: f32 = 50.;
-const BLOCK_THICKNESS: f32 = 10.;
-const LEFT_WALL_X: f32 = -400.;
-const RIGHT_WALL_X: f32 = 400.;
-const WALL_LENGTH: f32 = 800.;
-const TILES_PER_ROW: u32 = 20;
-const TILES_PER_COLUMN: u32 = 10;
-const TILE_WIDTH: f32 = 39.5;
-const TILE_GAP: f32 = 5.;
-const BALL_RADIUS: f32 = 5.;
-const BALL_START_VELOCITY: Vec2 = Vec2::new(0., -150.);
+mod common;
+mod player;
 
-#[derive(Component)]
-struct Person;
-
-#[derive(Component)]
-struct PlayerPaddle;
-
-#[derive(Component)]
-struct Velocity(Vec2);
+use common::{components::*, constants::*, system_sets::*};
 
 #[derive(Component)]
 struct Wall;
@@ -36,18 +19,6 @@ struct Tile;
 
 #[derive(Component)]
 struct Ball;
-
-#[derive(Component)]
-struct BC(BoundingCircle);
-
-#[derive(Component)]
-struct AABB(Aabb2d);
-
-#[derive(Component)]
-struct Dynamic;
-
-#[derive(Component)]
-struct Static;
 
 #[derive(PartialEq)]
 enum Side {
@@ -64,21 +35,15 @@ struct Score(u32);
 struct ScoreTextUI;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins(DefaultPlugins)
+    app.add_plugins((DefaultPlugins, player::plugin))
+        .configure_sets(FixedUpdate, (InputSet.before(TempSet)))
         .insert_resource(Score(0))
-        .add_systems(
-            Startup,
-            (add_walls, add_tiles, add_paddle, add_ball, add_ui),
-        )
+        .add_systems(Startup, (add_walls, add_tiles, add_ball, add_ui))
         .add_systems(
             FixedUpdate,
-            (
-                handle_input,
-                move_moving,
-                update_colliders,
-                handle_collisions,
-            )
-                .chain(),
+            (move_moving, update_colliders, handle_collisions)
+                .chain()
+                .in_set(TempSet),
         )
         .add_systems(Update, update_score_ui);
 }
@@ -164,28 +129,6 @@ fn add_tiles(
         y_pos -= BLOCK_THICKNESS + TILE_GAP;
         x_pos = x_start.clone();
     }
-}
-
-fn add_paddle(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    commands.spawn((
-        PlayerPaddle,
-        Transform::from_xyz(0., -300., 0.0),
-        Velocity(Vec2 { x: 0.0, y: 0.0 }),
-        Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
-            x: PLAYER_PADDLE_LENGTH,
-            y: BLOCK_THICKNESS,
-        }))),
-        Dynamic,
-        MeshMaterial2d(materials.add(Color::from(ORANGE))),
-        AABB(Aabb2d::new(
-            Vec2::new(0., -300.),
-            Vec2::new(PLAYER_PADDLE_LENGTH / 2., BLOCK_THICKNESS / 2.),
-        )),
-    ));
 }
 
 fn add_ball(
@@ -307,45 +250,6 @@ fn move_moving(time: Res<Time>, mut query: Query<(&mut Transform, &Velocity)>) {
         let change = velocity.0 * time.delta_secs();
         transform.translation += Vec3::new(change.x, change.y, 0.0);
     }
-}
-
-fn handle_input(
-    keys: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut Velocity, &mut Transform), With<PlayerPaddle>>,
-) {
-    let mut vel: f32 = 0.0;
-    let (mut velocity_comp, transform_comp) = query.single_mut().unwrap();
-    if keys.pressed(KeyCode::KeyA) {
-        vel -= PLAYER_MOVE_SPEED;
-    }
-    if keys.pressed(KeyCode::KeyD) {
-        vel += PLAYER_MOVE_SPEED
-    }
-    let clamped = clamp_paddle_loc(transform_comp);
-    if clamped {
-        velocity_comp.0.x = 0.;
-    } else {
-        velocity_comp.0.x = vel;
-    }
-}
-
-fn clamp_paddle_loc(mut transform: Mut<'_, Transform>) -> bool {
-    let mut pos = transform.translation;
-    let half_paddle_length = PLAYER_PADDLE_LENGTH / 2.;
-    let half_block_thickness = BLOCK_THICKNESS / 2.;
-    let left_max = LEFT_WALL_X + half_block_thickness + half_paddle_length;
-    if pos.x < left_max {
-        pos.x = left_max;
-        transform.translation = pos;
-        return true;
-    }
-    let right_max = RIGHT_WALL_X - half_block_thickness - half_paddle_length;
-    if pos.x > right_max {
-        pos.x = right_max;
-        transform.translation = pos;
-        return true;
-    }
-    return false;
 }
 
 fn update_score_ui(score_res: Res<Score>, mut text_query: Single<&mut Text, With<ScoreTextUI>>) {
