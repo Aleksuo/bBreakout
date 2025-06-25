@@ -1,11 +1,12 @@
 use bevy::prelude::*;
 
 use bevy::{
-    color::palettes::css::{BLUE, ORANGE, WHITE_SMOKE},
+    color::palettes::css::{BLUE, ORANGE},
     math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume},
     render::mesh::MeshAabb,
 };
 
+mod ball;
 mod common;
 mod player;
 
@@ -16,9 +17,6 @@ struct Wall;
 
 #[derive(Component)]
 struct Tile;
-
-#[derive(Component)]
-struct Ball;
 
 #[derive(PartialEq)]
 enum Side {
@@ -35,10 +33,10 @@ struct Score(u32);
 struct ScoreTextUI;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((DefaultPlugins, player::plugin))
-        .configure_sets(FixedUpdate, (InputSet.before(TempSet)))
+    app.add_plugins((DefaultPlugins, player::plugin, ball::plugin))
+        .configure_sets(FixedUpdate, InputSet.before(TempSet))
         .insert_resource(Score(0))
-        .add_systems(Startup, (add_walls, add_tiles, add_ball, add_ui))
+        .add_systems(Startup, (add_walls, add_tiles, add_ui))
         .add_systems(
             FixedUpdate,
             (move_moving, update_colliders, handle_collisions)
@@ -129,22 +127,6 @@ fn add_tiles(
         y_pos -= BLOCK_THICKNESS + TILE_GAP;
         x_pos = x_start.clone();
     }
-}
-
-fn add_ball(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    commands.spawn((
-        Transform::from_xyz(0., 0., 0.),
-        Velocity(BALL_START_VELOCITY),
-        Mesh2d(meshes.add(Circle::new(BALL_RADIUS))),
-        MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
-        Ball,
-        BC(BoundingCircle::new(Vec2::new(0., 0.), BALL_RADIUS)),
-        Dynamic,
-    ));
 }
 
 fn add_ui(mut commands: Commands) {
