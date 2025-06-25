@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
 use bevy::{
-    color::palettes::css::BLUE,
     math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume},
     render::mesh::MeshAabb,
 };
@@ -9,12 +8,12 @@ use bevy::{
 mod ball;
 mod common;
 mod player;
+mod tile;
 mod wall;
 
 use common::{components::*, constants::*, system_sets::*};
 
-#[derive(Component)]
-struct Tile;
+use crate::game::tile::Tile;
 
 #[derive(PartialEq)]
 enum Side {
@@ -31,48 +30,23 @@ struct Score(u32);
 struct ScoreTextUI;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((DefaultPlugins, player::plugin, ball::plugin, wall::plugin))
-        .configure_sets(FixedUpdate, InputSet.before(TempSet))
-        .insert_resource(Score(0))
-        .add_systems(Startup, (add_tiles, add_ui))
-        .add_systems(
-            FixedUpdate,
-            (move_moving, update_colliders, handle_collisions)
-                .chain()
-                .in_set(TempSet),
-        )
-        .add_systems(Update, update_score_ui);
-}
-
-fn add_tiles(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    let x_start = LEFT_WALL_X + (BLOCK_THICKNESS / 2.) + (TILE_WIDTH / 2.);
-    let mut x_pos = x_start.clone();
-    let mut y_pos = 345.;
-    for _i in 0..TILES_PER_COLUMN {
-        for _j in 0..TILES_PER_ROW {
-            commands.spawn((
-                Transform::from_xyz(x_pos, y_pos, 0.),
-                Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
-                    x: TILE_WIDTH - TILE_GAP,
-                    y: BLOCK_THICKNESS,
-                }))),
-                MeshMaterial2d(materials.add(Color::from(BLUE))),
-                Tile,
-                Static,
-                AABB(Aabb2d::new(
-                    Vec2::new(x_pos, y_pos),
-                    Vec2::new((TILE_WIDTH - TILE_GAP) / 2., BLOCK_THICKNESS / 2.),
-                )),
-            ));
-            x_pos += TILE_WIDTH;
-        }
-        y_pos -= BLOCK_THICKNESS + TILE_GAP;
-        x_pos = x_start.clone();
-    }
+    app.add_plugins((
+        DefaultPlugins,
+        player::plugin,
+        ball::plugin,
+        wall::plugin,
+        tile::plugin,
+    ))
+    .configure_sets(FixedUpdate, InputSet.before(TempSet))
+    .insert_resource(Score(0))
+    .add_systems(Startup, (add_ui))
+    .add_systems(
+        FixedUpdate,
+        (move_moving, update_colliders, handle_collisions)
+            .chain()
+            .in_set(TempSet),
+    )
+    .add_systems(Update, update_score_ui);
 }
 
 fn add_ui(mut commands: Commands) {
