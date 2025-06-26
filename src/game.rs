@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 mod ball;
 mod common;
+mod game_events;
 mod game_ui;
 mod physics;
 mod player;
@@ -21,6 +22,10 @@ pub(super) fn plugin(app: &mut App) {
         physics::plugin,
         game_ui::plugin,
         score::plugin,
+        game_events::plugin,
     ))
-    .configure_sets(FixedUpdate, InputSet.before(PhysicsSet));
+    .configure_sets(
+        FixedUpdate,
+        (InputSet.before(PhysicsSet), GameplaySet.after(PhysicsSet)),
+    );
 }

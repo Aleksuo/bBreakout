@@ -3,7 +3,7 @@ use bevy::{color::palettes::css::WHITE_SMOKE, math::bounding::BoundingCircle, pr
 use crate::game::common::{components::*, constants::*};
 
 #[derive(Component)]
-struct Ball;
+pub struct Ball;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, spawn_ball);

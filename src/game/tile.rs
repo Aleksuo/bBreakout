@@ -1,12 +1,17 @@
 use bevy::{color::palettes::css::BLUE, math::bounding::Aabb2d, prelude::*};
 
-use crate::game::common::{components::*, constants::*};
+use crate::game::{
+    ball::Ball,
+    common::{components::*, constants::*, system_sets::GameplaySet},
+    game_events::{CollisionEvent, TileDestroyedEvent},
+};
 
 #[derive(Component)]
 pub struct Tile;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, spawn_tiles);
+    app.add_systems(Startup, spawn_tiles)
+        .add_systems(FixedUpdate, on_collision_event.in_set(GameplaySet));
 }
 
 fn spawn_tiles(
@@ -37,5 +42,48 @@ fn spawn_tiles(
         }
         y_pos -= BLOCK_THICKNESS + TILE_GAP;
         x_pos = x_start.clone();
+    }
+}
+
+fn on_collision_event(
+    mut commands: Commands,
+    mut collision_reader: EventReader<CollisionEvent>,
+    mut tile_destroyed_writer: EventWriter<TileDestroyedEvent>,
+    tiles_q: Query<&Tile>,
+    balls_q: Query<&Ball>,
+) {
+    for col_event in collision_reader.read() {
+        if let Some(tile_entity) = maybe_collision_has_tile(col_event, tiles_q) {
+            let other_entity = other_entity_in_col(&tile_entity, col_event);
+            if let Some(_ball_entity) = maybe_entity_is_ball(&other_entity, balls_q) {
+                commands.entity(tile_entity).despawn();
+                tile_destroyed_writer.write(TileDestroyedEvent);
+            }
+        }
+    }
+}
+
+fn other_entity_in_col(first_entity: &Entity, col_event: &CollisionEvent) -> Entity {
+    if *first_entity == col_event.0 {
+        return col_event.1;
+    }
+    col_event.0
+}
+
+fn maybe_collision_has_tile(col_event: &CollisionEvent, tiles_q: Query<&Tile>) -> Option<Entity> {
+    maybe_entity_is_tile(&col_event.0, tiles_q).or(maybe_entity_is_tile(&col_event.1, tiles_q))
+}
+
+fn maybe_entity_is_tile(entity: &Entity, tiles_q: Query<&Tile>) -> Option<Entity> {
+    match tiles_q.get(*entity) {
+        Ok(_tile) => Some(*entity),
+        Err(_e) => None,
+    }
+}
+
+fn maybe_entity_is_ball(entity: &Entity, balls_q: Query<&Ball>) -> Option<Entity> {
+    match balls_q.get(*entity) {
+        Ok(_ball) => Some(*entity),
+        Err(_e) => None,
     }
 }
