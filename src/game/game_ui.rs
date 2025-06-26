@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::game::Score;
+use crate::game::score::Score;
 
 #[derive(Component)]
 struct ScoreTextUI;

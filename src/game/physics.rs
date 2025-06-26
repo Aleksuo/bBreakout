@@ -2,10 +2,10 @@ use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
 use bevy::render::mesh::MeshAabb;
 
-use crate::game::Score;
 use crate::game::common::components::*;
 use crate::game::common::constants::*;
 use crate::game::common::system_sets::PhysicsSet;
+use crate::game::score::Score;
 use crate::game::tile::Tile;
 
 #[derive(PartialEq)]
