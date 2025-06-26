@@ -4,4 +4,4 @@ use ::bevy::prelude::*;
 pub struct InputSet;
 
 #[derive(SystemSet, Hash, Debug, PartialEq, Eq, Clone)]
-pub struct TempSet;
+pub struct PhysicsSet;
