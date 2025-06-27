@@ -1,4 +1,7 @@
-use bevy::{color::palettes::css::WHITE_SMOKE, math::bounding::BoundingCircle, prelude::*};
+use bevy::{
+    color::palettes::css::WHITE_SMOKE, ecs::system::SystemId, math::bounding::BoundingCircle,
+    platform::collections::HashMap, prelude::*,
+};
 
 use crate::game::{
     common::{components::*, constants::*, system_sets::GameplaySet},
@@ -8,13 +11,37 @@ use crate::game::{
 #[derive(Component)]
 pub struct Ball;
 
+#[derive(Eq, Hash, PartialEq)]
+enum BallSystemId {
+    SpawnBall,
+}
+
+#[derive(Resource)]
+struct BallOneShotSystems(HashMap<BallSystemId, SystemId>);
+
+impl FromWorld for BallOneShotSystems {
+    fn from_world(world: &mut World) -> Self {
+        let mut ball_one_shot_systems = BallOneShotSystems(HashMap::new());
+        ball_one_shot_systems
+            .0
+            .insert(BallSystemId::SpawnBall, world.register_system(spawn_ball));
+        ball_one_shot_systems
+    }
+}
+
 #[derive(Resource)]
 pub struct Lives(pub u32);
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, spawn_ball)
+    app.add_systems(Startup, init_ball)
         .add_systems(FixedUpdate, on_collision_event.in_set(GameplaySet))
-        .insert_resource(Lives(3));
+        .insert_resource(Lives(3))
+        .init_resource::<BallOneShotSystems>();
+}
+
+fn init_ball(mut commands: Commands, systems: Res<BallOneShotSystems>) {
+    let id = systems.0[&BallSystemId::SpawnBall];
+    commands.run_system(id);
 }
 
 fn spawn_ball(
@@ -37,6 +64,7 @@ fn on_collision_event(
     mut commands: Commands,
     mut collision_reader: EventReader<CollisionEvent>,
     mut lives_res: ResMut<Lives>,
+    systems: Res<BallOneShotSystems>,
     instant_death_q: Query<&InstantDeath>,
     balls_q: Query<&Ball>,
 ) {
@@ -48,6 +76,8 @@ fn on_collision_event(
             {
                 commands.entity(ball_entity).despawn();
                 lives_res.0 -= 1;
+                let id = systems.0[&BallSystemId::SpawnBall];
+                commands.run_system(id);
             }
         }
     }
