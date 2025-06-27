@@ -1,5 +1,9 @@
 use crate::game::common::{components::*, constants::*};
-use bevy::{color::palettes::css::ORANGE, math::bounding::Aabb2d, prelude::*};
+use bevy::{
+    color::palettes::css::{ORANGE, WHITE_SMOKE},
+    math::bounding::Aabb2d,
+    prelude::*,
+};
 
 #[derive(Component)]
 struct Wall;
@@ -54,6 +58,20 @@ fn spawn_walls(
         Static,
         AABB(Aabb2d::new(
             Vec2::new(0., 355.),
+            Vec2::new(WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
+        )),
+    ));
+    commands.spawn((
+        Wall,
+        Transform::from_xyz(0., -355., 0.0),
+        Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
+            x: WALL_LENGTH - BLOCK_THICKNESS,
+            y: BLOCK_THICKNESS,
+        }))),
+        MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
+        Static,
+        AABB(Aabb2d::new(
+            Vec2::new(0., -355.),
             Vec2::new(WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
         )),
     ));
