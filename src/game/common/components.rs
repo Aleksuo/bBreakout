@@ -17,3 +17,6 @@ pub struct Dynamic;
 
 #[derive(Component)]
 pub struct Static;
+
+#[derive(Component)]
+pub struct InstantDeath;

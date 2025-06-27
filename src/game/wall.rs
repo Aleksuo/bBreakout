@@ -70,6 +70,7 @@ fn spawn_walls(
         }))),
         MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
         Static,
+        InstantDeath,
         AABB(Aabb2d::new(
             Vec2::new(0., -355.),
             Vec2::new(WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
