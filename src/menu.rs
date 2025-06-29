@@ -1,6 +1,6 @@
 use bevy::{color::palettes::css::BLUE, ecs::spawn::SpawnIter, prelude::*};
 
-use crate::game_state::{self, GameState, OnGameState};
+use crate::game_state::{GameState, OnGameState};
 
 #[derive(Component)]
 enum MenuButtonAction {
