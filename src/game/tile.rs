@@ -1,20 +1,22 @@
 use bevy::{color::palettes::css::BLUE, math::bounding::Aabb2d, prelude::*};
 
-use crate::game::{
-    ball::Ball,
-    common::{components::*, constants::*, system_sets::GameplaySet},
-    game_events::{CollisionEvent, TileDestroyedEvent},
+use crate::{
+    game::{
+        ball::Ball,
+        common::{components::*, constants::*, system_sets::GameplaySet},
+        game_events::{CollisionEvent, TileDestroyedEvent},
+    },
+    screen::SpawnOnWorldRootExt,
 };
 
 #[derive(Component)]
 pub struct Tile;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, spawn_tiles)
-        .add_systems(FixedUpdate, on_collision_event.in_set(GameplaySet));
+    app.add_systems(FixedUpdate, on_collision_event.in_set(GameplaySet));
 }
 
-fn spawn_tiles(
+pub fn setup_tiles(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -24,7 +26,7 @@ fn spawn_tiles(
     let mut y_pos = 345.;
     for _i in 0..TILES_PER_COLUMN {
         for _j in 0..TILES_PER_ROW {
-            commands.spawn((
+            commands.spawn_on_world_root((
                 Transform::from_xyz(x_pos, y_pos, 0.),
                 Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
                     x: TILE_WIDTH - TILE_GAP,

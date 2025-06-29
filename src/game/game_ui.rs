@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 
-use crate::game::{ball::Lives, score::Score};
+use crate::{
+    game::{ball::Lives, common::system_sets::GameplaySet, score::Score},
+    screen::SpawnOnUiRootExt,
+};
 
 #[derive(Component)]
 struct ScoreTextUI;
@@ -9,8 +12,10 @@ struct ScoreTextUI;
 struct LivesTextUI;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, add_ui)
-        .add_systems(Update, (update_score_ui, update_lives_ui));
+    app.add_systems(
+        Update,
+        (update_score_ui, update_lives_ui).in_set(GameplaySet),
+    );
 }
 
 fn update_score_ui(score_res: Res<Score>, mut text_query: Single<&mut Text, With<ScoreTextUI>>) {
@@ -27,8 +32,8 @@ fn update_lives_ui(lives_res: Res<Lives>, mut text_query: Single<&mut Text, With
     text_query.0 = format!("Lives: {}", lives_res.0);
 }
 
-fn add_ui(mut commands: Commands) {
-    commands.spawn((
+pub fn setup_ui(mut commands: Commands) {
+    commands.spawn_on_ui_root((
         Node {
             display: Display::Flex,
             flex_direction: FlexDirection::Column,

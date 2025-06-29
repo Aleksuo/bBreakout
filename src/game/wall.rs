@@ -1,4 +1,7 @@
-use crate::game::common::{components::*, constants::*};
+use crate::{
+    game::common::{components::*, constants::*},
+    screen::SpawnOnWorldRootExt,
+};
 use bevy::{
     color::palettes::css::{ORANGE, WHITE_SMOKE},
     math::bounding::Aabb2d,
@@ -8,17 +11,15 @@ use bevy::{
 #[derive(Component)]
 struct Wall;
 
-pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, spawn_walls);
-}
+pub(super) fn plugin(app: &mut App) {}
 
-fn spawn_walls(
+pub fn setup_walls(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     // Left wall
-    commands.spawn((
+    commands.spawn_on_world_root((
         Wall,
         Transform::from_xyz(LEFT_WALL_X, 0.0, 0.0),
         Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
@@ -33,7 +34,7 @@ fn spawn_walls(
         )),
     ));
     // Right wall
-    commands.spawn((
+    commands.spawn_on_world_root((
         Wall,
         Transform::from_xyz(RIGHT_WALL_X, 0.0, 0.0),
         Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
@@ -47,7 +48,7 @@ fn spawn_walls(
             Vec2::new(BLOCK_THICKNESS / 2., WALL_LENGTH / 2.),
         )),
     ));
-    commands.spawn((
+    commands.spawn_on_world_root((
         Wall,
         Transform::from_xyz(0., 355., 0.0),
         Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
@@ -61,7 +62,7 @@ fn spawn_walls(
             Vec2::new(WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
         )),
     ));
-    commands.spawn((
+    commands.spawn_on_world_root((
         Wall,
         Transform::from_xyz(0., -355., 0.0),
         Mesh2d(meshes.add(Rectangle::from_size(Vec2 {

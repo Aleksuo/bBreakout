@@ -3,9 +3,12 @@ use bevy::{
     platform::collections::HashMap, prelude::*,
 };
 
-use crate::game::{
-    common::{components::*, constants::*, system_sets::GameplaySet},
-    game_events::CollisionEvent,
+use crate::{
+    game::{
+        common::{components::*, constants::*, system_sets::GameplaySet},
+        game_events::CollisionEvent,
+    },
+    screen::SpawnOnWorldRootExt,
 };
 
 #[derive(Component)]
@@ -17,7 +20,7 @@ enum BallSystemId {
 }
 
 #[derive(Resource)]
-struct BallOneShotSystems(HashMap<BallSystemId, SystemId>);
+pub struct BallOneShotSystems(HashMap<BallSystemId, SystemId>);
 
 impl FromWorld for BallOneShotSystems {
     fn from_world(world: &mut World) -> Self {
@@ -33,13 +36,12 @@ impl FromWorld for BallOneShotSystems {
 pub struct Lives(pub u32);
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, init_ball)
-        .add_systems(FixedUpdate, on_collision_event.in_set(GameplaySet))
+    app.add_systems(FixedUpdate, on_collision_event.in_set(GameplaySet))
         .insert_resource(Lives(3))
         .init_resource::<BallOneShotSystems>();
 }
 
-fn init_ball(mut commands: Commands, systems: Res<BallOneShotSystems>) {
+pub fn setup_ball(mut commands: Commands, systems: Res<BallOneShotSystems>) {
     let id = systems.0[&BallSystemId::SpawnBall];
     commands.run_system(id);
 }
@@ -49,7 +51,7 @@ fn spawn_ball(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    commands.spawn((
+    commands.spawn_on_world_root((
         Transform::from_xyz(0., 0., 0.),
         Velocity(BALL_START_VELOCITY),
         Mesh2d(meshes.add(Circle::new(BALL_RADIUS))),

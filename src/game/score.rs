@@ -10,6 +10,10 @@ pub(super) fn plugin(app: &mut App) {
         .add_systems(FixedUpdate, on_tile_destroyed_event.in_set(GameplaySet));
 }
 
+pub fn setup_score(mut score_res: ResMut<Score>) {
+    score_res.0 = 0;
+}
+
 fn on_tile_destroyed_event(
     mut score_res: ResMut<Score>,
     mut tile_destroyed_reader: EventReader<TileDestroyedEvent>,

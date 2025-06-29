@@ -10,11 +10,10 @@ mod score;
 mod tile;
 mod wall;
 
-use common::system_sets::*;
+use crate::menu::GameState;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((
-        DefaultPlugins,
         player::plugin,
         ball::plugin,
         wall::plugin,
@@ -24,8 +23,15 @@ pub(super) fn plugin(app: &mut App) {
         score::plugin,
         game_events::plugin,
     ))
-    .configure_sets(
-        FixedUpdate,
-        (InputSet.before(PhysicsSet), GameplaySet.after(PhysicsSet)),
+    .add_systems(
+        OnEnter(GameState::Game),
+        (
+            player::setup_player_paddle,
+            ball::setup_ball,
+            wall::setup_walls,
+            tile::setup_tiles,
+            game_ui::setup_ui,
+            score::setup_score,
+        ),
     );
 }
