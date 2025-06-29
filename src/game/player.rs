@@ -1,7 +1,7 @@
 use bevy::{color::palettes::css::ORANGE, math::bounding::Aabb2d, prelude::*};
 
 use crate::game::common::{components::*, constants::*, system_sets::*};
-use crate::screen::SpawnOnWorldRootExt;
+use crate::game_state::{GameState, OnGameState};
 
 #[derive(Component)]
 struct PlayerPaddle;
@@ -15,7 +15,8 @@ pub fn setup_player_paddle(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    commands.spawn_on_world_root((
+    commands.spawn((
+        OnGameState(GameState::Game),
         PlayerPaddle,
         Transform::from_xyz(0., -300., 0.0),
         Velocity(Vec2 { x: 0.0, y: 0.0 }),

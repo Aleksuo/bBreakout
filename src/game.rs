@@ -10,7 +10,7 @@ mod score;
 mod tile;
 mod wall;
 
-use crate::{game::common::system_sets, menu::GameState};
+use crate::{game::common::system_sets, game_state::GameState};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((

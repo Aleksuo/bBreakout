@@ -6,7 +6,7 @@ use crate::{
         common::{components::*, constants::*, system_sets::GameplaySet},
         game_events::{CollisionEvent, TileDestroyedEvent},
     },
-    screen::SpawnOnWorldRootExt,
+    game_state::{GameState, OnGameState},
 };
 
 #[derive(Component)]
@@ -26,7 +26,8 @@ pub fn setup_tiles(
     let mut y_pos = 345.;
     for _i in 0..TILES_PER_COLUMN {
         for _j in 0..TILES_PER_ROW {
-            commands.spawn_on_world_root((
+            commands.spawn((
+                OnGameState(GameState::Game),
                 Transform::from_xyz(x_pos, y_pos, 0.),
                 Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
                     x: TILE_WIDTH - TILE_GAP,

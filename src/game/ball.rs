@@ -8,7 +8,7 @@ use crate::{
         common::{components::*, constants::*, system_sets::GameplaySet},
         game_events::CollisionEvent,
     },
-    screen::SpawnOnWorldRootExt,
+    game_state::{GameState, OnGameState},
 };
 
 #[derive(Component)]
@@ -51,7 +51,8 @@ fn spawn_ball(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    commands.spawn_on_world_root((
+    commands.spawn((
+        OnGameState(GameState::Game),
         Transform::from_xyz(0., 0., 0.),
         Velocity(BALL_START_VELOCITY),
         Mesh2d(meshes.add(Circle::new(BALL_RADIUS))),

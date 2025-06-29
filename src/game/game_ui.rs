@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     game::{ball::Lives, common::system_sets::GameplaySet, score::Score},
-    screen::SpawnOnUiRootExt,
+    game_state::{GameState, OnGameState},
 };
 
 #[derive(Component)]
@@ -33,7 +33,8 @@ fn update_lives_ui(lives_res: Res<Lives>, mut text_query: Single<&mut Text, With
 }
 
 pub fn setup_ui(mut commands: Commands) {
-    commands.spawn_on_ui_root((
+    commands.spawn((
+        OnGameState(GameState::Game),
         Node {
             display: Display::Flex,
             flex_direction: FlexDirection::Column,

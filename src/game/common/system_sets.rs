@@ -1,6 +1,6 @@
 use ::bevy::prelude::*;
 
-use crate::menu::GameState;
+use crate::game_state::GameState;
 
 pub(crate) fn plugin(app: &mut App) {
     app.configure_sets(
