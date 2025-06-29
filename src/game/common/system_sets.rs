@@ -2,7 +2,7 @@ use ::bevy::prelude::*;
 
 use crate::menu::GameState;
 
-pub(super) fn plugin(app: &mut App) {
+pub(crate) fn plugin(app: &mut App) {
     app.configure_sets(
         FixedUpdate,
         (InputSet.before(PhysicsSet), GameplaySet.after(PhysicsSet)),

@@ -10,7 +10,7 @@ mod score;
 mod tile;
 mod wall;
 
-use crate::menu::GameState;
+use crate::{game::common::system_sets, menu::GameState};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((
@@ -22,6 +22,7 @@ pub(super) fn plugin(app: &mut App) {
         game_ui::plugin,
         score::plugin,
         game_events::plugin,
+        system_sets::plugin,
     ))
     .add_systems(
         OnEnter(GameState::Game),

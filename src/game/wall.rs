@@ -11,7 +11,7 @@ use bevy::{
 #[derive(Component)]
 struct Wall;
 
-pub(super) fn plugin(app: &mut App) {}
+pub(super) fn plugin(_app: &mut App) {}
 
 pub fn setup_walls(
     mut commands: Commands,
