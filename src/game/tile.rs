@@ -22,7 +22,7 @@ pub fn setup_tiles(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let x_start = LEFT_WALL_X + (BLOCK_THICKNESS / 2.) + (TILE_WIDTH / 2.);
-    let mut x_pos = x_start.clone();
+    let mut x_pos = x_start;
     let mut y_pos = 345.;
     for _i in 0..TILES_PER_COLUMN {
         for _j in 0..TILES_PER_ROW {
@@ -36,7 +36,7 @@ pub fn setup_tiles(
                 MeshMaterial2d(materials.add(Color::from(BLUE))),
                 Tile,
                 Static,
-                AABB(Aabb2d::new(
+                Aabb(Aabb2d::new(
                     Vec2::new(x_pos, y_pos),
                     Vec2::new((TILE_WIDTH - TILE_GAP) / 2., BLOCK_THICKNESS / 2.),
                 )),
@@ -44,7 +44,7 @@ pub fn setup_tiles(
             x_pos += TILE_WIDTH;
         }
         y_pos -= BLOCK_THICKNESS + TILE_GAP;
-        x_pos = x_start.clone();
+        x_pos = x_start;
     }
 }
 

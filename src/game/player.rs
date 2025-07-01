@@ -26,7 +26,7 @@ pub fn setup_player_paddle(
         }))),
         Dynamic,
         MeshMaterial2d(materials.add(Color::from(ORANGE))),
-        AABB(Aabb2d::new(
+        Aabb(Aabb2d::new(
             Vec2::new(0., -300.),
             Vec2::new(PLAYER_PADDLE_LENGTH / 2., BLOCK_THICKNESS / 2.),
         )),
@@ -69,5 +69,5 @@ fn clamp_paddle_loc(mut transform: Mut<'_, Transform>) -> bool {
         transform.translation = pos;
         return true;
     }
-    return false;
+    false
 }

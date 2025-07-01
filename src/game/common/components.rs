@@ -10,7 +10,7 @@ pub struct Velocity(pub Vec2);
 pub struct BC(pub BoundingCircle);
 
 #[derive(Component)]
-pub struct AABB(pub Aabb2d);
+pub struct Aabb(pub Aabb2d);
 
 #[derive(Component)]
 pub struct Dynamic;

@@ -29,7 +29,7 @@ pub fn setup_walls(
         }))),
         MeshMaterial2d(materials.add(Color::from(ORANGE))),
         Static,
-        AABB(Aabb2d::new(
+        Aabb(Aabb2d::new(
             Vec2::new(LEFT_WALL_X, 0.0),
             Vec2::new(BLOCK_THICKNESS / 2., WALL_LENGTH / 2.),
         )),
@@ -45,7 +45,7 @@ pub fn setup_walls(
         }))),
         MeshMaterial2d(materials.add(Color::from(ORANGE))),
         Static,
-        AABB(Aabb2d::new(
+        Aabb(Aabb2d::new(
             Vec2::new(RIGHT_WALL_X, 0.0),
             Vec2::new(BLOCK_THICKNESS / 2., WALL_LENGTH / 2.),
         )),
@@ -60,7 +60,7 @@ pub fn setup_walls(
         }))),
         MeshMaterial2d(materials.add(Color::from(ORANGE))),
         Static,
-        AABB(Aabb2d::new(
+        Aabb(Aabb2d::new(
             Vec2::new(0., 355.),
             Vec2::new(WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
         )),
@@ -76,7 +76,7 @@ pub fn setup_walls(
         MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
         Static,
         InstantDeath,
-        AABB(Aabb2d::new(
+        Aabb(Aabb2d::new(
             Vec2::new(0., -355.),
             Vec2::new(WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
         )),

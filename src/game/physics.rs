@@ -34,7 +34,7 @@ fn move_moving(time: Res<Time>, mut query: Query<(&mut Transform, &Velocity)>) {
 fn handle_collisions(
     mut collision_writer: EventWriter<CollisionEvent>,
     mut bc_query: Query<(Entity, &mut BC, &mut Velocity, &mut Transform)>,
-    aabb_query: Query<(Entity, &AABB)>,
+    aabb_query: Query<(Entity, &Aabb)>,
 ) {
     for (bc_entity, mut bc, mut vel, mut transform) in &mut bc_query {
         for (aabb_entity, aabb) in aabb_query {
@@ -45,7 +45,7 @@ fn handle_collisions(
                 let mut dist_sq = delta.length_squared();
                 // Center is inside the rectangle, calculate side and return the corresponging unit vector
                 if dist_sq == 0. {
-                    delta = match get_ball_collision_side(&bc, &aabb) {
+                    delta = match get_ball_collision_side(&bc, aabb) {
                         Side::Left => Vec2::NEG_X,
                         Side::Right => Vec2::X,
                         Side::Top => Vec2::Y,
@@ -69,7 +69,7 @@ fn handle_collisions(
     }
 }
 
-fn get_ball_collision_side(bc: &BC, aabb: &AABB) -> Side {
+fn get_ball_collision_side(bc: &BC, aabb: &Aabb) -> Side {
     let closest = aabb.0.closest_point(bc.0.center);
     let delta = bc.0.center - closest;
     if delta.x.abs() > delta.y.abs() {
@@ -78,19 +78,17 @@ fn get_ball_collision_side(bc: &BC, aabb: &AABB) -> Side {
         } else {
             Side::Right
         }
+    } else if delta.y.is_sign_negative() {
+        Side::Bottom
     } else {
-        if delta.y.is_sign_negative() {
-            Side::Bottom
-        } else {
-            Side::Top
-        }
+        Side::Top
     }
 }
 
 fn update_colliders(
     meshes: ResMut<Assets<Mesh>>,
     bc_query: Query<(&mut BC, &Transform, &Mesh2d), With<Dynamic>>,
-    aabb_query: Query<(&mut AABB, &Transform, &Mesh2d), With<Dynamic>>,
+    aabb_query: Query<(&mut Aabb, &Transform, &Mesh2d), With<Dynamic>>,
 ) {
     for (mut bc, transform, _) in bc_query {
         let center = transform.translation.xy();

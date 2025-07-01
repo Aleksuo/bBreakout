@@ -2,6 +2,13 @@ use bevy::{color::palettes::css::BLUE, ecs::spawn::SpawnIter, prelude::*};
 
 use crate::game_state::{GameState, OnGameState};
 
+type MenuActionInteractionQuery<'w, 's> = Query<
+    'w,
+    's,
+    (&'static Interaction, &'static MenuButtonAction),
+    (Changed<Interaction>, With<Button>),
+>;
+
 #[derive(Component)]
 enum MenuButtonAction {
     NewGame,
@@ -59,10 +66,7 @@ fn spawn_menu(mut commands: Commands) {
 }
 
 fn menu_action(
-    interaction_query: Query<
-        (&Interaction, &MenuButtonAction),
-        (Changed<Interaction>, With<Button>),
-    >,
+    interaction_query: MenuActionInteractionQuery,
     mut game_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, menu_button_action) in &interaction_query {
