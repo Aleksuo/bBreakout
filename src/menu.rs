@@ -5,6 +5,7 @@ use crate::game_state::{GameState, OnGameState};
 #[derive(Component)]
 enum MenuButtonAction {
     NewGame,
+    Settings,
     QuitGame,
 }
 
@@ -39,6 +40,7 @@ fn spawn_menu(mut commands: Commands) {
             Children::spawn(SpawnIter(
                 [
                     (MenuButtonAction::NewGame, "New game"),
+                    (MenuButtonAction::Settings, "Settings"),
                     (MenuButtonAction::QuitGame, "Quit game"),
                 ]
                 .into_iter()
@@ -69,8 +71,11 @@ fn menu_action(
                 MenuButtonAction::NewGame => {
                     game_state.set(GameState::Game);
                 }
+                MenuButtonAction::Settings => {
+                    warn!("Settings handler is not implemented yet")
+                }
                 MenuButtonAction::QuitGame => {
-                    warn!("Quit game handler not implemented yet");
+                    warn!("Quit game handler is not implemented yet");
                 }
             }
         }
