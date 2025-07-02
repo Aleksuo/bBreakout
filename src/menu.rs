@@ -1,4 +1,8 @@
-use bevy::{color::palettes::css::BLUE, ecs::spawn::SpawnIter, prelude::*};
+use bevy::{
+    color::palettes::css::{BLACK, BLUE, WHITE_SMOKE},
+    ecs::spawn::SpawnIter,
+    prelude::*,
+};
 
 use crate::game_state::{GameState, OnGameState};
 
@@ -26,6 +30,13 @@ fn spawn_menu(mut commands: Commands) {
         width: Val::Px(300.0),
         height: Val::Px(65.0),
         margin: UiRect::all(Val::Px(20.0)),
+        border: UiRect {
+            top: Val::Px(10.),
+            bottom: Val::Px(10.),
+            right: Val::Px(10.),
+            left: Val::Px(10.),
+            ..default()
+        },
         justify_content: JustifyContent::Center,
         align_items: AlignItems::Center,
         ..default()
@@ -39,6 +50,7 @@ fn spawn_menu(mut commands: Commands) {
             justify_content: JustifyContent::Center,
             ..Default::default()
         },
+        BackgroundColor(Color::from(BLACK)),
         children![(
             Node {
                 flex_direction: FlexDirection::Column,
@@ -54,10 +66,11 @@ fn spawn_menu(mut commands: Commands) {
                 .map(move |(action, text)| {
                     (
                         Button,
-                        BackgroundColor(Color::from(BLUE)),
+                        BackgroundColor(Color::from(BLACK)),
+                        BorderColor(Color::from(WHITE_SMOKE)),
                         button_node.clone(),
                         action,
-                        children![Text::new(text)],
+                        children![Text::new(text), TextColor(Color::from(WHITE_SMOKE))],
                     )
                 })
             ))
