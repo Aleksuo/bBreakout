@@ -1,5 +1,5 @@
 use bevy::{
-    color::palettes::css::{BLACK, BLUE, WHITE_SMOKE},
+    color::palettes::css::{BLACK, WHITE_SMOKE},
     ecs::spawn::SpawnIter,
     prelude::*,
 };
@@ -35,7 +35,6 @@ fn spawn_menu(mut commands: Commands) {
             bottom: Val::Px(10.),
             right: Val::Px(10.),
             left: Val::Px(10.),
-            ..default()
         },
         justify_content: JustifyContent::Center,
         align_items: AlignItems::Center,
