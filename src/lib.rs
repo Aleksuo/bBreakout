@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{color::palettes::css::BLACK, prelude::*};
 
 mod camera;
 mod game;
@@ -15,6 +15,7 @@ impl Plugin for AppPlugin {
             game_state::plugin,
             game::plugin,
             menu::plugin,
-        ));
+        ))
+        .insert_resource(ClearColor(Color::from(BLACK)));
     }
 }
