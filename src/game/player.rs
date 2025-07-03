@@ -1,4 +1,5 @@
-use bevy::{color::palettes::css::ORANGE, math::bounding::Aabb2d, prelude::*};
+use bevy::color::palettes::css::WHITE_SMOKE;
+use bevy::{math::bounding::Aabb2d, prelude::*};
 
 use crate::game::common::{components::*, constants::*, system_sets::*};
 use crate::game_state::{GameState, OnGameState};
@@ -25,7 +26,7 @@ pub fn setup_player_paddle(
             y: BLOCK_THICKNESS,
         }))),
         Dynamic,
-        MeshMaterial2d(materials.add(Color::from(ORANGE))),
+        MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
         Aabb(Aabb2d::new(
             Vec2::new(0., -300.),
             Vec2::new(PLAYER_PADDLE_LENGTH / 2., BLOCK_THICKNESS / 2.),
