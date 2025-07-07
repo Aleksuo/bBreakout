@@ -3,7 +3,7 @@ use bevy::{color::palettes::css::BLACK, prelude::*};
 mod camera;
 mod game;
 mod game_state;
-mod menu;
+mod main_menu;
 
 pub struct AppPlugin;
 
@@ -14,7 +14,7 @@ impl Plugin for AppPlugin {
             camera::plugin,
             game_state::plugin,
             game::plugin,
-            menu::plugin,
+            main_menu::plugin,
         ))
         .insert_resource(ClearColor(Color::from(BLACK)));
     }
