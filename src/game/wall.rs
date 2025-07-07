@@ -21,13 +21,13 @@ pub fn setup_walls(
         Transform::from_xyz(LEFT_WALL_X, 0.0, 0.0),
         Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
             x: BLOCK_THICKNESS,
-            y: WALL_LENGTH,
+            y: VERTICAL_WALL_LENGTH + 2. * BLOCK_THICKNESS,
         }))),
         MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
         Static,
         Aabb(Aabb2d::new(
             Vec2::new(LEFT_WALL_X, 0.0),
-            Vec2::new(BLOCK_THICKNESS / 2., WALL_LENGTH / 2.),
+            Vec2::new(BLOCK_THICKNESS / 2., VERTICAL_WALL_LENGTH / 2.),
         )),
     ));
     // Right wall
@@ -37,13 +37,13 @@ pub fn setup_walls(
         Transform::from_xyz(RIGHT_WALL_X, 0.0, 0.0),
         Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
             x: BLOCK_THICKNESS,
-            y: WALL_LENGTH,
+            y: VERTICAL_WALL_LENGTH + 2. * BLOCK_THICKNESS,
         }))),
         MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
         Static,
         Aabb(Aabb2d::new(
             Vec2::new(RIGHT_WALL_X, 0.0),
-            Vec2::new(BLOCK_THICKNESS / 2., WALL_LENGTH / 2.),
+            Vec2::new(BLOCK_THICKNESS / 2., VERTICAL_WALL_LENGTH / 2.),
         )),
     ));
     commands.spawn((
@@ -51,14 +51,14 @@ pub fn setup_walls(
         Wall,
         Transform::from_xyz(0., 355., 0.0),
         Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
-            x: WALL_LENGTH,
+            x: HORIZONTAL_WALL_LENGTH,
             y: BLOCK_THICKNESS,
         }))),
         MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
         Static,
         Aabb(Aabb2d::new(
             Vec2::new(0., 355.),
-            Vec2::new(WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
+            Vec2::new(HORIZONTAL_WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
         )),
     ));
     commands.spawn((
@@ -66,7 +66,7 @@ pub fn setup_walls(
         Wall,
         Transform::from_xyz(0., -355., 0.0),
         Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
-            x: WALL_LENGTH - BLOCK_THICKNESS,
+            x: HORIZONTAL_WALL_LENGTH - BLOCK_THICKNESS,
             y: BLOCK_THICKNESS,
         }))),
         MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
@@ -74,7 +74,7 @@ pub fn setup_walls(
         InstantDeath,
         Aabb(Aabb2d::new(
             Vec2::new(0., -355.),
-            Vec2::new(WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
+            Vec2::new(HORIZONTAL_WALL_LENGTH / 2., BLOCK_THICKNESS / 2.),
         )),
     ));
 }
