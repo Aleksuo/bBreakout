@@ -1,4 +1,8 @@
-use bevy::{color::palettes::css::BLUE, math::bounding::Aabb2d, prelude::*};
+use bevy::{
+    color::palettes::css::{BLUE, GREEN, RED},
+    math::bounding::Aabb2d,
+    prelude::*,
+};
 
 use crate::{
     game::{
@@ -25,8 +29,14 @@ pub fn setup_tiles(
     let x_start = LEFT_WALL_X + (BLOCK_THICKNESS / 2.) + (TILE_WIDTH / 2.);
     let mut x_pos = x_start;
     let mut y_pos = 345.;
-    for _i in 0..TILES_PER_COLUMN {
+    for i in 0..TILES_PER_COLUMN {
         for _j in 0..TILES_PER_ROW {
+            let mut brick_color = Color::from(BLUE);
+            if i < 3 {
+                brick_color = Color::from(RED);
+            } else if i < 6 {
+                brick_color = Color::from(GREEN);
+            }
             commands.spawn((
                 OnGameState(GameState::Game),
                 Transform::from_xyz(x_pos, y_pos, 0.),
@@ -34,7 +44,7 @@ pub fn setup_tiles(
                     x: TILE_WIDTH - TILE_GAP,
                     y: BLOCK_THICKNESS,
                 }))),
-                MeshMaterial2d(materials.add(Color::from(BLUE))),
+                MeshMaterial2d(materials.add(brick_color)),
                 Tile,
                 Static,
                 Aabb(Aabb2d::new(
