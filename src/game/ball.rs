@@ -33,11 +33,12 @@ impl FromWorld for BallOneShotSystems {
 }
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(
-        FixedUpdate,
-        (on_spawn_ball_event, on_collision_event).in_set(GameplaySet),
-    )
-    .init_resource::<BallOneShotSystems>();
+    app.add_systems(OnEnter(GameState::Game), setup_ball)
+        .add_systems(
+            FixedUpdate,
+            (on_spawn_ball_event, on_collision_event).in_set(GameplaySet),
+        )
+        .init_resource::<BallOneShotSystems>();
 }
 
 pub fn setup_ball(mut commands: Commands, systems: Res<BallOneShotSystems>) {

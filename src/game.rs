@@ -11,7 +11,7 @@ mod score;
 mod tile;
 mod wall;
 
-use crate::{game::common::system_sets, game_state::GameState};
+use crate::game::common::system_sets;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((
@@ -25,16 +25,5 @@ pub(super) fn plugin(app: &mut App) {
         game_events::plugin,
         system_sets::plugin,
         life::plugin,
-    ))
-    .add_systems(
-        OnEnter(GameState::Game),
-        (
-            player::setup_player_paddle,
-            ball::setup_ball,
-            wall::setup_walls,
-            tile::setup_tiles,
-            game_ui::setup_ui,
-            score::setup_score,
-        ),
-    );
+    ));
 }

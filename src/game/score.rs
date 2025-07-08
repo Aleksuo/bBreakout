@@ -1,12 +1,16 @@
 use bevy::prelude::*;
 
-use crate::game::{common::system_sets::GameplaySet, game_events::TileDestroyedEvent};
+use crate::{
+    game::{common::system_sets::GameplaySet, game_events::TileDestroyedEvent},
+    game_state::GameState,
+};
 
 #[derive(Resource, DerefMut, Deref)]
 pub struct Score(pub u32);
 
 pub(super) fn plugin(app: &mut App) {
     app.insert_resource(Score(0))
+        .add_systems(OnEnter(GameState::Game), setup_score)
         .add_systems(FixedUpdate, on_tile_destroyed_event.in_set(GameplaySet));
 }
 

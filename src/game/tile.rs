@@ -13,7 +13,8 @@ use crate::{
 pub struct Tile;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(FixedUpdate, on_collision_event.in_set(GameplaySet));
+    app.add_systems(OnEnter(GameState::Game), setup_tiles)
+        .add_systems(FixedUpdate, on_collision_event.in_set(GameplaySet));
 }
 
 pub fn setup_tiles(

@@ -8,7 +8,8 @@ use crate::game_state::{GameState, OnGameState};
 struct PlayerPaddle;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(FixedUpdate, (handle_input).in_set(InputSet));
+    app.add_systems(OnEnter(GameState::Game), setup_player_paddle)
+        .add_systems(FixedUpdate, (handle_input).in_set(InputSet));
 }
 
 pub fn setup_player_paddle(

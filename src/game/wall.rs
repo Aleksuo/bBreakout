@@ -7,7 +7,9 @@ use bevy::{color::palettes::css::WHITE_SMOKE, math::bounding::Aabb2d, prelude::*
 #[derive(Component)]
 struct Wall;
 
-pub(super) fn plugin(_app: &mut App) {}
+pub(super) fn plugin(app: &mut App) {
+    app.add_systems(OnEnter(GameState::Game), setup_walls);
+}
 
 pub fn setup_walls(
     mut commands: Commands,

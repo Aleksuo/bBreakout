@@ -12,10 +12,11 @@ struct ScoreTextUI;
 struct LivesTextUI;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(
-        Update,
-        (update_score_ui, update_lives_ui).in_set(GameplaySet),
-    );
+    app.add_systems(OnEnter(GameState::Game), setup_ui)
+        .add_systems(
+            Update,
+            (update_score_ui, update_lives_ui).in_set(GameplaySet),
+        );
 }
 
 fn update_score_ui(score_res: Res<Score>, mut text_query: Single<&mut Text, With<ScoreTextUI>>) {
