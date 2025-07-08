@@ -5,6 +5,7 @@ pub enum GameState {
     #[default]
     MainMenu,
     Game,
+    GameOver,
 }
 
 #[derive(Component)]

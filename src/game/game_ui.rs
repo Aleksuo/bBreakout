@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    game::{ball::Lives, common::system_sets::GameplaySet, score::Score},
+    game::{common::system_sets::GameplaySet, life::Lives, score::Score},
     game_state::{GameState, OnGameState},
 };
 

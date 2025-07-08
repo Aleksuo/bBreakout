@@ -6,7 +6,7 @@ use bevy::{
 use crate::{
     game::{
         common::{components::*, constants::*, system_sets::GameplaySet},
-        game_events::CollisionEvent,
+        game_events::{BallDestroyedEvent, BallSpawnEvent, CollisionEvent},
     },
     game_state::{GameState, OnGameState},
 };
@@ -32,13 +32,12 @@ impl FromWorld for BallOneShotSystems {
     }
 }
 
-#[derive(Resource)]
-pub struct Lives(pub u32);
-
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(FixedUpdate, on_collision_event.in_set(GameplaySet))
-        .insert_resource(Lives(3))
-        .init_resource::<BallOneShotSystems>();
+    app.add_systems(
+        FixedUpdate,
+        (on_spawn_ball_event, on_collision_event).in_set(GameplaySet),
+    )
+    .init_resource::<BallOneShotSystems>();
 }
 
 pub fn setup_ball(mut commands: Commands, systems: Res<BallOneShotSystems>) {
@@ -63,11 +62,21 @@ fn spawn_ball(
     ));
 }
 
+fn on_spawn_ball_event(
+    mut commands: Commands,
+    mut spawn_ball_reader: EventReader<BallSpawnEvent>,
+    systems: Res<BallOneShotSystems>,
+) {
+    let id = systems.0[&BallSystemId::SpawnBall];
+    for _ in spawn_ball_reader.read() {
+        commands.run_system(id);
+    }
+}
+
 fn on_collision_event(
     mut commands: Commands,
     mut collision_reader: EventReader<CollisionEvent>,
-    mut lives_res: ResMut<Lives>,
-    systems: Res<BallOneShotSystems>,
+    mut ball_destroyed_writer: EventWriter<BallDestroyedEvent>,
     instant_death_q: Query<&InstantDeath>,
     balls_q: Query<&Ball>,
 ) {
@@ -78,9 +87,7 @@ fn on_collision_event(
                 maybe_entity_is_instant_death(&other_entity, instant_death_q)
             {
                 commands.entity(ball_entity).despawn();
-                lives_res.0 -= 1;
-                let id = systems.0[&BallSystemId::SpawnBall];
-                commands.run_system(id);
+                ball_destroyed_writer.write(BallDestroyedEvent);
             }
         }
     }

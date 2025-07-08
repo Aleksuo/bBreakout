@@ -4,6 +4,7 @@ mod ball;
 mod common;
 mod game_events;
 mod game_ui;
+mod life;
 mod physics;
 mod player;
 mod score;
@@ -23,6 +24,7 @@ pub(super) fn plugin(app: &mut App) {
         score::plugin,
         game_events::plugin,
         system_sets::plugin,
+        life::plugin,
     ))
     .add_systems(
         OnEnter(GameState::Game),
