@@ -6,6 +6,13 @@ use bevy::{
 
 use crate::game_state::{GameState, OnGameState};
 
+type GameOverMenuActionQuery<'w, 's> = Query<
+    'w,
+    's,
+    (&'static Interaction, &'static GameOverMenuAction),
+    (Changed<Interaction>, With<Button>),
+>;
+
 #[derive(Component)]
 enum GameOverMenuAction {
     NewGame,
@@ -68,10 +75,7 @@ fn spawn_menu(mut commands: Commands) {
 }
 
 fn menu_action(
-    interaction_query: Query<
-        (&Interaction, &GameOverMenuAction),
-        (Changed<Interaction>, With<Button>),
-    >,
+    interaction_query: GameOverMenuActionQuery,
     mut game_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, game_over_menu_action) in &interaction_query {
