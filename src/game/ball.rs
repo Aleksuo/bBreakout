@@ -1,8 +1,10 @@
+use bevy::color::palettes::css::GRAY;
 use bevy::{
     color::palettes::css::WHITE_SMOKE, ecs::system::SystemId, math::bounding::BoundingCircle,
     platform::collections::HashMap, prelude::*,
 };
 
+use crate::game::particle::{ParticleBundle, ShrinkingParticle};
 use crate::{
     game::{
         common::{components::*, constants::*, system_sets::GameplaySet},
@@ -13,6 +15,9 @@ use crate::{
 
 #[derive(Component)]
 pub struct BallSpeedUpTimer(Timer);
+
+#[derive(Component)]
+pub struct TrailSpawnTimer(Timer);
 
 #[derive(Component)]
 pub struct Ball;
@@ -43,6 +48,7 @@ pub(super) fn plugin(app: &mut App) {
                 on_spawn_ball_event,
                 on_collision_event,
                 tick_ball_speed_up_timers,
+                tick_ball_trail_spawners,
             )
                 .in_set(GameplaySet),
         )
@@ -65,6 +71,7 @@ fn spawn_ball(
             BALL_SPEED_UP_INTERVAL,
             TimerMode::Repeating,
         )),
+        TrailSpawnTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         Transform::from_xyz(0., 0., 0.),
         Velocity(Vec2::new(0., -BALL_START_VELOCITY)),
         Mesh2d(meshes.add(Circle::new(BALL_RADIUS))),
@@ -92,6 +99,30 @@ fn tick_ball_speed_up_timers(
             } else {
                 velocity.0 = dir * len;
             }
+        }
+    }
+}
+
+fn tick_ball_trail_spawners(
+    mut commands: Commands,
+    mut query: Query<(&mut TrailSpawnTimer, &Transform), With<Ball>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    time: Res<Time>,
+) {
+    for (mut timer, transform) in query.iter_mut() {
+        timer.0.tick(time.delta());
+        if timer.0.finished() {
+            let translation = transform.translation;
+            commands.spawn((
+                ParticleBundle::new(
+                    translation.x,
+                    translation.y,
+                    Mesh2d(meshes.add(Circle::new(BALL_RADIUS))),
+                    MeshMaterial2d(materials.add(Color::from(GRAY))),
+                ),
+                ShrinkingParticle,
+            ));
         }
     }
 }

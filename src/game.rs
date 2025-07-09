@@ -5,6 +5,7 @@ mod common;
 mod game_events;
 mod game_ui;
 mod life;
+mod particle;
 mod physics;
 mod player;
 mod score;
@@ -25,5 +26,6 @@ pub(super) fn plugin(app: &mut App) {
         game_events::plugin,
         system_sets::plugin,
         life::plugin,
+        particle::plugin,
     ));
 }
