@@ -1,5 +1,3 @@
-use bevy::prelude::*;
-
 pub const PLAYER_MOVE_SPEED: f32 = 200.0;
 pub const PLAYER_PADDLE_LENGTH: f32 = 50.;
 pub const BLOCK_THICKNESS: f32 = 10.;
@@ -12,4 +10,9 @@ pub const TILES_PER_COLUMN: u32 = 9;
 pub const TILE_WIDTH: f32 = 39.5;
 pub const TILE_GAP: f32 = 5.;
 pub const BALL_RADIUS: f32 = 5.;
-pub const BALL_START_VELOCITY: Vec2 = Vec2::new(0., -150.);
+pub const BALL_START_VELOCITY: f32 = 150.;
+pub const BALL_MAX_VELOCITY: f32 = 350.;
+pub const BALL_SPEED_UP_INTERVAL: f32 = 5.;
+pub const BALL_SPEED_INCREMENT_STEPS: u8 = 10;
+pub const BALL_SPEED_INCREMENT_STEP: f32 =
+    (BALL_MAX_VELOCITY - BALL_START_VELOCITY) / BALL_SPEED_INCREMENT_STEPS as f32;

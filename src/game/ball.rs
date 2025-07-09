@@ -12,6 +12,9 @@ use crate::{
 };
 
 #[derive(Component)]
+pub struct BallSpeedUpTimer(Timer);
+
+#[derive(Component)]
 pub struct Ball;
 
 #[derive(Eq, Hash, PartialEq)]
@@ -36,7 +39,12 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::Game), setup_ball)
         .add_systems(
             FixedUpdate,
-            (on_spawn_ball_event, on_collision_event).in_set(GameplaySet),
+            (
+                on_spawn_ball_event,
+                on_collision_event,
+                tick_ball_speed_up_timers,
+            )
+                .in_set(GameplaySet),
         )
         .init_resource::<BallOneShotSystems>();
 }
@@ -53,14 +61,39 @@ fn spawn_ball(
 ) {
     commands.spawn((
         OnGameState(GameState::Game),
+        BallSpeedUpTimer(Timer::from_seconds(
+            BALL_SPEED_UP_INTERVAL,
+            TimerMode::Repeating,
+        )),
         Transform::from_xyz(0., 0., 0.),
-        Velocity(BALL_START_VELOCITY),
+        Velocity(Vec2::new(0., -BALL_START_VELOCITY)),
         Mesh2d(meshes.add(Circle::new(BALL_RADIUS))),
         MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
         Ball,
         BC(BoundingCircle::new(Vec2::new(0., 0.), BALL_RADIUS)),
         Dynamic,
     ));
+}
+
+fn tick_ball_speed_up_timers(
+    mut commands: Commands,
+    mut query: Query<(&mut BallSpeedUpTimer, &mut Velocity, Entity), With<Ball>>,
+    time: Res<Time>,
+) {
+    for (mut timer, mut velocity, entity) in query.iter_mut() {
+        timer.0.tick(time.delta());
+        if timer.0.finished() {
+            let dir = velocity.0.normalize();
+            let mut len = velocity.0.length();
+            len += BALL_SPEED_INCREMENT_STEP;
+            if len >= BALL_MAX_VELOCITY {
+                velocity.0 = dir * BALL_MAX_VELOCITY;
+                commands.entity(entity).remove::<BallSpeedUpTimer>();
+            } else {
+                velocity.0 = dir * len;
+            }
+        }
+    }
 }
 
 fn on_spawn_ball_event(
