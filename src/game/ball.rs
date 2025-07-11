@@ -1,4 +1,4 @@
-use bevy::color::palettes::css::GRAY;
+use bevy::color::palettes::css::{GRAY, PURPLE, RED, YELLOW};
 use bevy::{
     color::palettes::css::WHITE_SMOKE, ecs::system::SystemId, math::bounding::BoundingCircle,
     platform::collections::HashMap, prelude::*,
@@ -105,12 +105,12 @@ fn tick_ball_speed_up_timers(
 
 fn tick_ball_trail_spawners(
     mut commands: Commands,
-    mut query: Query<(&mut TrailSpawnTimer, &Transform), With<Ball>>,
+    mut query: Query<(&mut TrailSpawnTimer, &Transform, &Velocity), With<Ball>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     time: Res<Time>,
 ) {
-    for (mut timer, transform) in query.iter_mut() {
+    for (mut timer, transform, velocity) in query.iter_mut() {
         timer.0.tick(time.delta());
         if timer.0.finished() {
             let translation = transform.translation;
@@ -119,12 +119,37 @@ fn tick_ball_trail_spawners(
                     translation.x,
                     translation.y,
                     Mesh2d(meshes.add(Circle::new(BALL_RADIUS))),
-                    MeshMaterial2d(materials.add(Color::from(GRAY))),
+                    MeshMaterial2d(materials.add(resolve_trail_color(
+                        velocity,
+                        BALL_START_VELOCITY,
+                        BALL_MAX_VELOCITY,
+                    ))),
                 ),
                 ShrinkingParticle,
             ));
         }
     }
+}
+
+fn resolve_trail_color(vel: &Velocity, min_speed: f32, max_speed: f32) -> Color {
+    let vel_magnitude = vel.0.length();
+    let fraction_of_max: u32 =
+        (((vel_magnitude - min_speed) / (max_speed - min_speed)) * 100.).ceil() as u32;
+
+    let gray = Color::from(GRAY);
+    let yellow = Color::from(YELLOW);
+    let red = Color::from(RED);
+    let purple = Color::from(PURPLE);
+
+    let factor = fraction_of_max as f32 / 100.;
+    if fraction_of_max <= 25 {
+        return gray.mix(&yellow, factor);
+    } else if fraction_of_max <= 75 {
+        return yellow.mix(&red, factor);
+    } else if fraction_of_max <= 100 {
+        return red.mix(&purple, factor);
+    }
+    purple
 }
 
 fn on_spawn_ball_event(
