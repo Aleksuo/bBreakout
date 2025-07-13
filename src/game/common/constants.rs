@@ -1,5 +1,7 @@
 pub const PLAYER_MOVE_SPEED: f32 = 200.0;
 pub const PLAYER_PADDLE_LENGTH: f32 = 50.;
+pub const PLAYER_START_X: f32 = 0.;
+pub const PLAYER_START_Y: f32 = -300.;
 pub const BLOCK_THICKNESS: f32 = 10.;
 pub const LEFT_WALL_X: f32 = -400.;
 pub const RIGHT_WALL_X: f32 = 400.;

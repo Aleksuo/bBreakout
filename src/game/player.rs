@@ -5,7 +5,7 @@ use crate::game::common::{components::*, constants::*, system_sets::*};
 use crate::game_state::{GameState, OnGameState};
 
 #[derive(Component)]
-struct PlayerPaddle;
+pub struct PlayerPaddle;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::Game), setup_player_paddle)
@@ -20,7 +20,7 @@ pub fn setup_player_paddle(
     commands.spawn((
         OnGameState(GameState::Game),
         PlayerPaddle,
-        Transform::from_xyz(0., -300., 0.0),
+        Transform::from_xyz(PLAYER_START_X, PLAYER_START_Y, 0.0),
         Velocity(Vec2 { x: 0.0, y: 0.0 }),
         Mesh2d(meshes.add(Rectangle::from_size(Vec2 {
             x: PLAYER_PADDLE_LENGTH,

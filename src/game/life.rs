@@ -3,8 +3,12 @@ use bevy::prelude::*;
 use crate::{
     game::{
         ball::Ball,
-        common::system_sets::GameplaySet,
+        common::{
+            constants::{PLAYER_START_X, PLAYER_START_Y},
+            system_sets::GameplaySet,
+        },
         game_events::{BallDestroyedEvent, BallSpawnEvent},
+        player::PlayerPaddle,
     },
     game_state::GameState,
 };
@@ -28,6 +32,7 @@ fn on_ball_destroyed(
     mut ball_spawn_writer: EventWriter<BallSpawnEvent>,
     mut game_state: ResMut<NextState<GameState>>,
     ball_query: Query<&Ball>,
+    mut player_query: Single<&mut Transform, With<PlayerPaddle>>,
 ) {
     if ball_destroyed_reader.is_empty() {
         return;
@@ -36,6 +41,7 @@ fn on_ball_destroyed(
         lives_res.0 -= 1;
         if lives_res.0 > 0 {
             ball_spawn_writer.write(BallSpawnEvent);
+            player_query.translation = Vec3::new(PLAYER_START_X, PLAYER_START_Y, 0.);
         }
     }
 
