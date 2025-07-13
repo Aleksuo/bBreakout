@@ -133,20 +133,23 @@ fn tick_ball_trail_spawners(
 
 fn resolve_trail_color(vel: &Velocity, min_speed: f32, max_speed: f32) -> Color {
     let vel_magnitude = vel.0.length();
-    let fraction_of_max: u32 =
-        (((vel_magnitude - min_speed) / (max_speed - min_speed)) * 100.).ceil() as u32;
+    let fraction_of_max: f32 =
+        (((vel_magnitude - min_speed) / (max_speed - min_speed)) * 100.).ceil();
 
     let gray = Color::from(GRAY);
     let yellow = Color::from(YELLOW);
     let red = Color::from(RED);
     let purple = Color::from(PURPLE);
 
-    let factor = fraction_of_max as f32 / 100.;
-    if fraction_of_max <= 25 {
+    info!(fraction_of_max);
+    if fraction_of_max <= 25. {
+        let factor = fraction_of_max / 25.;
         return gray.mix(&yellow, factor);
-    } else if fraction_of_max <= 75 {
+    } else if fraction_of_max <= 75. {
+        let factor = (fraction_of_max - 25.) / 50.;
         return yellow.mix(&red, factor);
-    } else if fraction_of_max <= 100 {
+    } else if fraction_of_max <= 100. {
+        let factor = (fraction_of_max - 75.) / 25.;
         return red.mix(&purple, factor);
     }
     purple
