@@ -141,7 +141,6 @@ fn resolve_trail_color(vel: &Velocity, min_speed: f32, max_speed: f32) -> Color 
     let red = Color::from(RED);
     let purple = Color::from(PURPLE);
 
-    info!(fraction_of_max);
     if fraction_of_max <= 25. {
         let factor = fraction_of_max / 25.;
         return gray.mix(&yellow, factor);
