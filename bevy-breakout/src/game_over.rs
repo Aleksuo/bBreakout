@@ -51,6 +51,8 @@ fn spawn_menu(mut commands: Commands) {
         children![(
             Node {
                 flex_direction: FlexDirection::Column,
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
                 ..default()
             },
             Children::spawn(SpawnIter(
