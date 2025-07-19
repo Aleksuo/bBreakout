@@ -1,0 +1,14 @@
+.container {
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.canvas-class {
+    border: #444444;
+    border-style: dashed;
+}
+.info-container {
+    background-color: #888888;
+}

@@ -11,7 +11,13 @@ pub struct AppPlugin;
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            DefaultPlugins,
+            DefaultPlugins.set(WindowPlugin {
+                primary_window: Some(Window {
+                    canvas: Some("#game-canvas".into()),
+                    ..default()
+                }),
+                ..default()
+            }),
             camera::plugin,
             game_state::plugin,
             game::plugin,

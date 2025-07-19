@@ -1,0 +1,21 @@
+{
+  "name": "bbreakout",
+  "version": "1.0.0",
+  "workspaces": [
+    "webapp",
+    "bevy-breakout"
+  ],
+  "scripts": {
+    "dev:webapp": "npm run start --workspace=webapp",
+    "dev:game": "npm run start --workspace=bevy-breakout",
+    "bundle-wasm": "npm run bundle-wasm --workspace=bevy-breakout",
+    "dist": "npm run bundle-wasm && npm run build --workspace=webapp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aleksuo/bBreakout.git"
+  },
+  "dependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
