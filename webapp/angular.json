@@ -35,6 +35,10 @@
             ]
           },
           "configurations": {
+            "gh-pages": {
+              "baseHref": "bbreakout",
+              "outputHashing": "all"
+            },
             "production": {
               "budgets": [
                 {
