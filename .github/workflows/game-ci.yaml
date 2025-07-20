@@ -17,10 +17,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/bevy-breakout/.cargo/bin/
-            ~/bevy-breakout/.cargo/registry/index/
-            ~/bevy-breakout/.cargo/registry/cache/
-            ~/bevy-breakout/.cargo/git/db/
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
             bevy-breakout/target/
           key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.toml') }}
       - name: Install stable toolchain
@@ -43,10 +43,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/bevy-breakout/.cargo/bin/
-            ~/bevy-breakout/.cargo/registry/index/
-            ~/bevy-breakout/.cargo/registry/cache/
-            ~/bevy-breakout/.cargo/git/db/
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
             bevy-breakout/target/
           key: ${{ runner.os }}-cargo-clippy-${{ hashFiles('**/Cargo.toml') }}
       - name: Install stable toolchain
