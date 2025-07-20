@@ -59,6 +59,7 @@ fn spawn_menu(mut commands: Commands) {
                 [
                     (MenuButtonAction::NewGame, "New game"),
                     (MenuButtonAction::Settings, "Settings"),
+                    #[cfg(not(target_arch = "wasm32"))]
                     (MenuButtonAction::QuitGame, "Quit game"),
                 ]
                 .into_iter()
@@ -78,6 +79,7 @@ fn spawn_menu(mut commands: Commands) {
 }
 
 fn menu_action(
+    mut app_exit: EventWriter<AppExit>,
     interaction_query: MenuActionInteractionQuery,
     mut game_state: ResMut<NextState<GameState>>,
 ) {
@@ -91,7 +93,7 @@ fn menu_action(
                     warn!("Settings handler is not implemented yet")
                 }
                 MenuButtonAction::QuitGame => {
-                    warn!("Quit game handler is not implemented yet");
+                    app_exit.write(AppExit::Success);
                 }
             }
         }
