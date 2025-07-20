@@ -1,5 +1,6 @@
 use bevy::{color::palettes::css::BLACK, prelude::*};
 
+mod audio;
 mod camera;
 mod game;
 mod game_over;
@@ -18,6 +19,7 @@ impl Plugin for AppPlugin {
                 }),
                 ..default()
             }),
+            audio::plugin,
             camera::plugin,
             game_state::plugin,
             game::plugin,

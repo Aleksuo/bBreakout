@@ -4,6 +4,7 @@ use bevy::{
     platform::collections::HashMap, prelude::*,
 };
 
+use crate::audio::PlaySoundEvent;
 use crate::game::particle::{ParticleBundle, ShrinkingParticle};
 use crate::{
     game::{
@@ -169,6 +170,7 @@ fn on_collision_event(
     mut commands: Commands,
     mut collision_reader: EventReader<CollisionEvent>,
     mut ball_destroyed_writer: EventWriter<BallDestroyedEvent>,
+    mut sound_event_writer: EventWriter<PlaySoundEvent>,
     instant_death_q: Query<&InstantDeath>,
     balls_q: Query<&Ball>,
 ) {
@@ -180,6 +182,8 @@ fn on_collision_event(
             {
                 commands.entity(ball_entity).despawn();
                 ball_destroyed_writer.write(BallDestroyedEvent);
+            } else {
+                sound_event_writer.write(PlaySoundEvent::BallHit);
             }
         }
     }

@@ -22,4 +22,4 @@ strip = "debuginfo"
 runner = "wasm-server-runner"
 
 [dependencies]
-bevy = "0.16.1"
+bevy = { version="0.16.1", features = ["wav"] }
