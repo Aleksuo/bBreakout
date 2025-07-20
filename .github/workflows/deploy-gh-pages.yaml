@@ -1,8 +1,6 @@
 name: GitHub Pages
 on:
-  push:
-    branches:
-      - main  # Set a branch name to trigger deployment
+  workflow_call:
 jobs:
   deploy:
     runs-on: ubuntu-22.04

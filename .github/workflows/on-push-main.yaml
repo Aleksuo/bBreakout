@@ -1,0 +1,15 @@
+name: On Main push
+on:
+  push: 
+    branches:
+      - main
+jobs:
+  run-game-ci:
+    name: Run Game CI
+    uses: ./github/workflows/game-ci.yaml
+  deploy-gh-pages:
+    name: Deploy to Github Pages
+    needs:
+     - run-game-ci
+    uses: ./github/workflows/deploy-gh-pages.yaml
+

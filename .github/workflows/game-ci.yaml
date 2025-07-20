@@ -1,15 +1,9 @@
 # Initial template from https://github.com/bevyengine/bevy_github_ci_template
-name: CI
-
+name: Game CI
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
+  workflow_call:
 env:
   CARGO_TERM_COLOR: always
-
 jobs:
   # Run cargo test
   test:
