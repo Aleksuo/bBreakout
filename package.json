@@ -9,7 +9,8 @@
     "dev:webapp": "npm run start --workspace=webapp",
     "dev:game": "npm run start --workspace=bevy-breakout",
     "bundle-wasm": "npm run bundle-wasm --workspace=bevy-breakout",
-    "dist:gh-pages": "npm run bundle-wasm && npm run build:gh-pages --workspace=webapp -- --output-path='../dist'"
+    "copy-assets": "node ./scripts/copy-assets.mjs",
+    "dist:gh-pages": "npm run bundle-wasm && npm run copy-assets && npm run build:gh-pages --workspace=webapp -- --output-path='../dist'"
   },
   "repository": {
     "type": "git",

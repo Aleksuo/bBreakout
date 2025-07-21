@@ -28,6 +28,11 @@
               {
                 "glob": "**/*.wasm",
                 "input": "src/wasm"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
               }
             ],
             "styles": [
