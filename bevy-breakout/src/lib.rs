@@ -1,4 +1,4 @@
-use bevy::{color::palettes::css::BLACK, prelude::*};
+use bevy::{asset::AssetMetaCheck, color::palettes::css::BLACK, prelude::*};
 
 mod audio;
 mod camera;
@@ -12,13 +12,18 @@ pub struct AppPlugin;
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            DefaultPlugins.set(WindowPlugin {
-                primary_window: Some(Window {
-                    canvas: Some("#game-canvas".into()),
+            DefaultPlugins
+                .set(AssetPlugin {
+                    meta_check: AssetMetaCheck::Never,
+                    ..default()
+                })
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        canvas: Some("#game-canvas".into()),
+                        ..default()
+                    }),
                     ..default()
                 }),
-                ..default()
-            }),
             audio::plugin,
             camera::plugin,
             game_state::plugin,
