@@ -2,7 +2,11 @@ use crate::{
     game::common::{components::*, constants::*},
     game_state::{GameState, OnGameState},
 };
-use bevy::{color::palettes::css::WHITE_SMOKE, math::bounding::Aabb2d, prelude::*};
+use bevy::{
+    color::palettes::css::{DIM_GRAY, WHITE_SMOKE},
+    math::bounding::Aabb2d,
+    prelude::*,
+};
 
 #[derive(Component)]
 struct Wall;
@@ -71,7 +75,7 @@ pub fn setup_walls(
             x: HORIZONTAL_WALL_LENGTH - BLOCK_THICKNESS,
             y: BLOCK_THICKNESS,
         }))),
-        MeshMaterial2d(materials.add(Color::from(WHITE_SMOKE))),
+        MeshMaterial2d(materials.add(Color::from(DIM_GRAY))),
         Static,
         InstantDeath,
         Aabb(Aabb2d::new(
