@@ -12,6 +12,9 @@ struct ParticleMarker;
 pub struct ShrinkingParticle;
 
 #[derive(Component)]
+pub struct FadeInParticle;
+
+#[derive(Component)]
 struct ParticleLifeTimer(Timer);
 
 #[derive(Bundle)]
@@ -40,7 +43,12 @@ impl<M: Material2d> ParticleBundle<M> {
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         FixedUpdate,
-        (tick_particle_lifetimes, shrink_shrinking_particles).in_set(GameplaySet),
+        (
+            tick_particle_lifetimes,
+            shrink_shrinking_particles,
+            fade_in_particles,
+        )
+            .in_set(GameplaySet),
     );
 }
 
@@ -63,5 +71,20 @@ fn shrink_shrinking_particles(
     for (mut transform, timer) in query.iter_mut() {
         let scale_factor = timer.0.fraction_remaining();
         *transform = transform.with_scale(Vec3::new(scale_factor, scale_factor, 1.));
+    }
+}
+
+fn fade_in_particles(
+    mut color_mats: ResMut<Assets<ColorMaterial>>,
+    mut query: Query<
+        (&mut MeshMaterial2d<ColorMaterial>, &ParticleLifeTimer),
+        With<ShrinkingParticle>,
+    >,
+) {
+    for (mat, timer) in query.iter_mut() {
+        let maybe_color_mat = color_mats.get_mut(mat.0.id());
+        if let Some(color_mat) = maybe_color_mat {
+            color_mat.color.set_alpha(1. - timer.0.fraction_remaining());
+        }
     }
 }

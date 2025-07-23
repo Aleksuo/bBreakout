@@ -1,11 +1,12 @@
 use bevy::color::palettes::css::{GRAY, PURPLE, RED, YELLOW};
+use bevy::sprite::AlphaMode2d;
 use bevy::{
     color::palettes::css::WHITE_SMOKE, ecs::system::SystemId, math::bounding::BoundingCircle,
     platform::collections::HashMap, prelude::*,
 };
 
 use crate::audio::PlaySoundEvent;
-use crate::game::particle::{ParticleBundle, ShrinkingParticle};
+use crate::game::particle::{FadeInParticle, ParticleBundle, ShrinkingParticle};
 use crate::{
     game::{
         common::{components::*, constants::*, system_sets::GameplaySet},
@@ -120,12 +121,17 @@ fn tick_ball_trail_spawners(
                     translation.x,
                     translation.y,
                     Mesh2d(meshes.add(Circle::new(BALL_RADIUS))),
-                    MeshMaterial2d(materials.add(resolve_trail_color(
-                        velocity,
-                        BALL_START_VELOCITY,
-                        BALL_MAX_VELOCITY,
-                    ))),
+                    MeshMaterial2d(materials.add(ColorMaterial {
+                        color: resolve_trail_color(
+                            velocity,
+                            BALL_START_VELOCITY,
+                            BALL_MAX_VELOCITY,
+                        ),
+                        alpha_mode: AlphaMode2d::Blend,
+                        ..default()
+                    })),
                 ),
+                FadeInParticle,
                 ShrinkingParticle,
             ));
         }
