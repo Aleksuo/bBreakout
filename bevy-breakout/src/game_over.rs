@@ -1,6 +1,5 @@
 use bevy::{
     color::palettes::css::{BLACK, WHITE_SMOKE},
-    ecs::spawn::SpawnIter,
     prelude::*,
 };
 
@@ -18,13 +17,16 @@ enum GameOverMenuAction {
     NewGame,
     MainMenu,
 }
+#[derive(Resource, DerefMut, Deref)]
+pub struct FinalScore(pub u32);
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(GameState::GameOver), spawn_menu)
+    app.insert_resource(FinalScore(0))
+        .add_systems(OnEnter(GameState::GameOver), spawn_menu)
         .add_systems(Update, menu_action);
 }
 
-fn spawn_menu(mut commands: Commands) {
+fn spawn_menu(mut commands: Commands, final_score_res: Res<FinalScore>) {
     let button_node = Node {
         width: Val::Px(300.0),
         height: Val::Px(65.0),
@@ -55,23 +57,47 @@ fn spawn_menu(mut commands: Commands) {
                 justify_content: JustifyContent::Center,
                 ..default()
             },
-            Children::spawn(SpawnIter(
-                [
-                    (GameOverMenuAction::NewGame, "Try again"),
-                    (GameOverMenuAction::MainMenu, "Back to main menu"),
-                ]
-                .into_iter()
-                .map(move |(action, text)| {
-                    (
-                        Button,
-                        BackgroundColor(Color::from(BLACK)),
-                        BorderColor(Color::from(WHITE_SMOKE)),
-                        button_node.clone(),
-                        action,
-                        children![Text::new(text), TextColor(Color::from(WHITE_SMOKE))],
-                    )
-                })
-            ))
+            children![
+                (
+                    Text::new("Game over"),
+                    TextFont {
+                        font_size: 70.,
+                        ..default()
+                    },
+                    TextColor(Color::from(WHITE_SMOKE)),
+                    Node {
+                        margin: UiRect::bottom(Val::Px(20.)),
+                        ..default()
+                    }
+                ),
+                (
+                    Text::new(format!("Final score: {}", final_score_res.0)),
+                    TextColor(Color::from(WHITE_SMOKE)),
+                    Node {
+                        margin: UiRect::bottom(Val::Px(20.)),
+                        ..default()
+                    }
+                ),
+                (
+                    GameOverMenuAction::NewGame,
+                    Button,
+                    BackgroundColor(Color::from(BLACK)),
+                    BorderColor(Color::from(WHITE_SMOKE)),
+                    button_node.clone(),
+                    children![Text::new("Try again"), TextColor(Color::from(WHITE_SMOKE))],
+                ),
+                (
+                    GameOverMenuAction::MainMenu,
+                    Button,
+                    BackgroundColor(Color::from(BLACK)),
+                    BorderColor(Color::from(WHITE_SMOKE)),
+                    button_node.clone(),
+                    children![
+                        Text::new("Back to main menu"),
+                        TextColor(Color::from(WHITE_SMOKE))
+                    ],
+                )
+            ]
         )],
     ));
 }
