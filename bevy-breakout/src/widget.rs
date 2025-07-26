@@ -3,16 +3,18 @@ use bevy::{
     prelude::*,
 };
 
+type ButtonInteractionQuery<'w, 's> = Query<
+    'w,
+    's,
+    (&'static Interaction, &'static mut BorderColor),
+    (Changed<Interaction>, With<Button>),
+>;
+
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, button_interaction);
 }
 
-fn button_interaction(
-    mut interaction_query: Query<
-        (&Interaction, &mut BorderColor),
-        (Changed<Interaction>, With<Button>),
-    >,
-) {
+fn button_interaction(mut interaction_query: ButtonInteractionQuery) {
     for (interaction, mut border_color) in interaction_query.iter_mut() {
         border_color.0 = match interaction {
             Interaction::Hovered => Color::from(GRAY),
