@@ -16,6 +16,7 @@ type MenuActionInteractionQuery<'w, 's> = Query<
 enum MenuButtonAction {
     NewGame,
     Settings,
+    #[cfg(not(target_arch = "wasm32"))]
     QuitGame,
 }
 
