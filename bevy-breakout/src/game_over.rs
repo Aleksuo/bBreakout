@@ -1,9 +1,9 @@
-use bevy::{
-    color::palettes::css::{BLACK, WHITE_SMOKE},
-    prelude::*,
-};
+use bevy::{color::palettes::css::WHITE_SMOKE, prelude::*};
 
-use crate::game_state::{GameState, OnGameState};
+use crate::{
+    game_state::{GameState, OnGameState},
+    widget::MenuButton,
+};
 
 type GameOverMenuActionQuery<'w, 's> = Query<
     'w,
@@ -27,20 +27,6 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 fn spawn_menu(mut commands: Commands, final_score_res: Res<FinalScore>) {
-    let button_node = Node {
-        width: Val::Px(300.0),
-        height: Val::Px(65.0),
-        margin: UiRect::all(Val::Px(20.0)),
-        border: UiRect {
-            top: Val::Px(10.),
-            bottom: Val::Px(10.),
-            right: Val::Px(10.),
-            left: Val::Px(10.),
-        },
-        justify_content: JustifyContent::Center,
-        align_items: AlignItems::Center,
-        ..default()
-    };
     commands.spawn((
         OnGameState(GameState::GameOver),
         Node {
@@ -80,18 +66,12 @@ fn spawn_menu(mut commands: Commands, final_score_res: Res<FinalScore>) {
                 ),
                 (
                     GameOverMenuAction::NewGame,
-                    Button,
-                    BackgroundColor(Color::from(BLACK)),
-                    BorderColor(Color::from(WHITE_SMOKE)),
-                    button_node.clone(),
+                    MenuButton,
                     children![Text::new("Try again"), TextColor(Color::from(WHITE_SMOKE))],
                 ),
                 (
                     GameOverMenuAction::MainMenu,
-                    Button,
-                    BackgroundColor(Color::from(BLACK)),
-                    BorderColor(Color::from(WHITE_SMOKE)),
-                    button_node.clone(),
+                    MenuButton,
                     children![
                         Text::new("Back to main menu"),
                         TextColor(Color::from(WHITE_SMOKE))
