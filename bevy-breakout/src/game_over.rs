@@ -23,7 +23,7 @@ pub struct FinalScore(pub u32);
 pub(super) fn plugin(app: &mut App) {
     app.insert_resource(FinalScore(0))
         .add_systems(OnEnter(GameState::GameOver), spawn_menu)
-        .add_systems(Update, menu_action);
+        .add_systems(Update, menu_action.run_if(in_state(GameState::GameOver)));
 }
 
 fn spawn_menu(mut commands: Commands, final_score_res: Res<FinalScore>) {
