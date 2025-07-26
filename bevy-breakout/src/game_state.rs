@@ -6,6 +6,7 @@ pub enum GameState {
     MainMenu,
     Game,
     GameOver,
+    Settings,
 }
 
 #[derive(Component)]

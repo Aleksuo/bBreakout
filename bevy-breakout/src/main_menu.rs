@@ -88,7 +88,7 @@ fn menu_action(
                     game_state.set(GameState::Game);
                 }
                 MenuButtonAction::Settings => {
-                    warn!("Settings handler is not implemented yet")
+                    game_state.set(GameState::Settings);
                 }
                 #[cfg(not(target_arch = "wasm32"))]
                 MenuButtonAction::QuitGame => {
