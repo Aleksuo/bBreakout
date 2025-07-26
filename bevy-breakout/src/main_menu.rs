@@ -40,68 +40,61 @@ fn spawn_menu(mut commands: Commands) {
         align_items: AlignItems::Center,
         ..default()
     };
-    commands.spawn((
-        OnGameState(GameState::MainMenu),
-        Node {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            ..Default::default()
-        },
-        BackgroundColor(Color::from(BLACK)),
-        children![(
+    commands
+        .spawn((
+            OnGameState(GameState::MainMenu),
             Node {
-                flex_direction: FlexDirection::Column,
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
-                ..default()
+                ..Default::default()
             },
-            children![
-                (
-                    Text::new("bBreakout"),
-                    TextFont {
-                        font_size: 80.,
-                        ..default()
-                    },
-                    TextColor(Color::from(WHITE_SMOKE)),
-                    Node {
-                        margin: UiRect::bottom(Val::Px(20.)),
-                        ..default()
-                    }
-                ),
-                (
-                    Button,
-                    BackgroundColor(Color::from(BLACK)),
-                    BorderColor(Color::from(WHITE_SMOKE)),
-                    button_node.clone(),
-                    MenuButtonAction::NewGame,
-                    children![Text::new("New game"), TextColor(Color::from(WHITE_SMOKE))],
-                ),
-                (
-                    Button,
-                    BackgroundColor(Color::from(BLACK)),
-                    BorderColor(Color::from(WHITE_SMOKE)),
-                    button_node.clone(),
-                    MenuButtonAction::Settings,
-                    children![Text::new("Settings"), TextColor(Color::from(WHITE_SMOKE))],
-                ),
-                #[cfg(not(target_arch = "wasm32"))]
-                (
-                    Button,
-                    BackgroundColor(Color::from(BLACK)),
-                    BorderColor(Color::from(WHITE_SMOKE)),
-                    button_node.clone(),
-                    MenuButtonAction::QuitGame,
-                    children![Text::new("Quit game"), TextColor(Color::from(WHITE_SMOKE))],
-                ),
-            ],
-        )],
-    ));
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn(Node {
+                    flex_direction: FlexDirection::Column,
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    ..default()
+                })
+                .with_children(|col| {
+                    col.spawn((
+                        Text::new("bBreakout"),
+                        TextFont {
+                            font_size: 80.,
+                            ..default()
+                        },
+                        TextColor(Color::from(WHITE_SMOKE)),
+                        Node {
+                            margin: UiRect::bottom(Val::Px(20.)),
+                            ..default()
+                        },
+                    ));
+                    [
+                        (MenuButtonAction::NewGame, "New game"),
+                        (MenuButtonAction::Settings, "Settings"),
+                        #[cfg(not(target_arch = "wasm32"))]
+                        (MenuButtonAction::QuitGame, "Quit game"),
+                    ]
+                    .into_iter()
+                    .for_each(|(action, text)| {
+                        col.spawn((
+                            Button,
+                            BackgroundColor(Color::from(BLACK)),
+                            BorderColor(Color::from(WHITE_SMOKE)),
+                            button_node.clone(),
+                            action,
+                            children![Text::new(text), TextColor(Color::from(WHITE_SMOKE))],
+                        ));
+                    });
+                });
+        });
 }
 
 fn menu_action(
-    mut app_exit: EventWriter<AppExit>,
+    #[cfg(not(target_arch = "wasm32"))] mut app_exit: EventWriter<AppExit>,
     interaction_query: MenuActionInteractionQuery,
     mut game_state: ResMut<NextState<GameState>>,
 ) {
@@ -114,6 +107,7 @@ fn menu_action(
                 MenuButtonAction::Settings => {
                     warn!("Settings handler is not implemented yet")
                 }
+                #[cfg(not(target_arch = "wasm32"))]
                 MenuButtonAction::QuitGame => {
                     app_exit.write(AppExit::Success);
                 }
