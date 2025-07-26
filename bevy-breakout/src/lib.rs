@@ -6,6 +6,7 @@ mod game;
 mod game_over;
 mod game_state;
 mod main_menu;
+mod widget;
 
 pub struct AppPlugin;
 
@@ -30,6 +31,7 @@ impl Plugin for AppPlugin {
             game::plugin,
             main_menu::plugin,
             game_over::plugin,
+            widget::plugin,
         ))
         .insert_resource(ClearColor(Color::from(BLACK)));
     }

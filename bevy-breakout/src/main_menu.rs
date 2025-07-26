@@ -1,5 +1,5 @@
 use bevy::{
-    color::palettes::css::{BLACK, GRAY, WHITE_SMOKE},
+    color::palettes::css::{BLACK, WHITE_SMOKE},
     prelude::*,
 };
 
@@ -22,10 +22,7 @@ enum MenuButtonAction {
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::MainMenu), spawn_menu)
-        .add_systems(
-            Update,
-            (menu_action, button_interaction).run_if(in_state(GameState::MainMenu)),
-        );
+        .add_systems(Update, menu_action.run_if(in_state(GameState::MainMenu)));
 }
 
 fn spawn_menu(mut commands: Commands) {
@@ -101,21 +98,6 @@ fn spawn_menu(mut commands: Commands) {
             ],
         )],
     ));
-}
-
-fn button_interaction(
-    mut interaction_query: Query<
-        (&Interaction, &mut BorderColor),
-        (Changed<Interaction>, With<Button>),
-    >,
-) {
-    for (interaction, mut border_color) in interaction_query.iter_mut() {
-        border_color.0 = match interaction {
-            Interaction::Hovered => Color::from(GRAY),
-            Interaction::Pressed => Color::from(GRAY),
-            Interaction::None => Color::from(WHITE_SMOKE),
-        }
-    }
 }
 
 fn menu_action(
