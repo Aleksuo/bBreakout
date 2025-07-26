@@ -1,6 +1,5 @@
 use bevy::{
     color::palettes::css::{BLACK, WHITE_SMOKE},
-    ecs::spawn::SpawnIter,
     prelude::*,
 };
 
@@ -53,27 +52,49 @@ fn spawn_menu(mut commands: Commands) {
         children![(
             Node {
                 flex_direction: FlexDirection::Column,
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
                 ..default()
             },
-            Children::spawn(SpawnIter(
-                [
-                    (MenuButtonAction::NewGame, "New game"),
-                    (MenuButtonAction::Settings, "Settings"),
-                    #[cfg(not(target_arch = "wasm32"))]
-                    (MenuButtonAction::QuitGame, "Quit game"),
-                ]
-                .into_iter()
-                .map(move |(action, text)| {
-                    (
-                        Button,
-                        BackgroundColor(Color::from(BLACK)),
-                        BorderColor(Color::from(WHITE_SMOKE)),
-                        button_node.clone(),
-                        action,
-                        children![Text::new(text), TextColor(Color::from(WHITE_SMOKE))],
-                    )
-                })
-            ))
+            children![
+                (
+                    Text::new("bBreakout"),
+                    TextFont {
+                        font_size: 80.,
+                        ..default()
+                    },
+                    TextColor(Color::from(WHITE_SMOKE)),
+                    Node {
+                        margin: UiRect::bottom(Val::Px(20.)),
+                        ..default()
+                    }
+                ),
+                (
+                    Button,
+                    BackgroundColor(Color::from(BLACK)),
+                    BorderColor(Color::from(WHITE_SMOKE)),
+                    button_node.clone(),
+                    MenuButtonAction::NewGame,
+                    children![Text::new("New game"), TextColor(Color::from(WHITE_SMOKE))],
+                ),
+                (
+                    Button,
+                    BackgroundColor(Color::from(BLACK)),
+                    BorderColor(Color::from(WHITE_SMOKE)),
+                    button_node.clone(),
+                    MenuButtonAction::Settings,
+                    children![Text::new("Settings"), TextColor(Color::from(WHITE_SMOKE))],
+                ),
+                #[cfg(not(target_arch = "wasm32"))]
+                (
+                    Button,
+                    BackgroundColor(Color::from(BLACK)),
+                    BorderColor(Color::from(WHITE_SMOKE)),
+                    button_node.clone(),
+                    MenuButtonAction::QuitGame,
+                    children![Text::new("Quit game"), TextColor(Color::from(WHITE_SMOKE))],
+                ),
+            ],
         )],
     ));
 }
