@@ -3,7 +3,9 @@ use bevy::{
     prelude::*,
 };
 
-type ButtonInteractionQuery<'w, 's> = Query<
+use crate::audio::PlaySoundEvent;
+
+type MenuButtonBorderInteractionQuery<'w, 's> = Query<
     'w,
     's,
     (&'static Interaction, &'static mut BorderColor),
@@ -37,15 +39,36 @@ fn button_node() -> Node {
 pub struct MenuButton;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, menu_button_interaction);
+    app.add_systems(
+        Update,
+        (
+            menu_button_border_interaction,
+            menu_button_sound_interaction,
+        ),
+    );
 }
 
-fn menu_button_interaction(mut interaction_query: ButtonInteractionQuery) {
+fn menu_button_border_interaction(mut interaction_query: MenuButtonBorderInteractionQuery) {
     for (interaction, mut border_color) in interaction_query.iter_mut() {
         border_color.0 = match interaction {
             Interaction::Hovered => Color::from(GRAY),
             Interaction::Pressed => Color::from(GRAY),
             Interaction::None => Color::from(WHITE_SMOKE),
+        }
+    }
+}
+
+fn menu_button_sound_interaction(
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<MenuButton>)>,
+    mut play_sound_writer: EventWriter<PlaySoundEvent>,
+) {
+    for interaction in interaction_query.iter() {
+        match interaction {
+            Interaction::Pressed => {
+                play_sound_writer.write(PlaySoundEvent::BallHit);
+            }
+            Interaction::Hovered => (),
+            Interaction::None => (),
         }
     }
 }
