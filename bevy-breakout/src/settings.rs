@@ -24,7 +24,7 @@ pub(super) fn plugin(app: &mut App) {
 
 fn spawn_menu(mut commands: Commands) {
     commands.spawn((
-        OnGameState(GameState::GameOver),
+        OnGameState(GameState::Settings),
         Node {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
@@ -32,7 +32,7 @@ fn spawn_menu(mut commands: Commands) {
             justify_content: JustifyContent::Center,
             ..Default::default()
         },
-        children![
+        children![(
             Node {
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
@@ -41,13 +41,13 @@ fn spawn_menu(mut commands: Commands) {
             },
             children![(
                 MenuButton,
+                SettingsMenuAction::MainMenu,
                 children![
-                    SettingsMenuAction::MainMenu,
                     Text::new("Back to main menu"),
                     TextColor(Color::from(WHITE_SMOKE))
                 ]
             )]
-        ],
+        )],
     ));
 }
 
