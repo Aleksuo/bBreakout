@@ -1,4 +1,7 @@
-use bevy::{color::palettes::css::WHITE_SMOKE, prelude::*};
+use bevy::{
+    color::palettes::css::{BLACK, WHITE_SMOKE},
+    prelude::*,
+};
 
 use crate::{
     game_state::{GameState, OnGameState},
@@ -67,15 +70,15 @@ fn spawn_menu(mut commands: Commands, final_score_res: Res<FinalScore>) {
                 (
                     GameOverMenuAction::NewGame,
                     MenuButton,
-                    children![Text::new("Try again"), TextColor(Color::from(WHITE_SMOKE))],
+                    children![(Text::new("Try again"), TextColor(Color::from(BLACK)))],
                 ),
                 (
                     GameOverMenuAction::MainMenu,
                     MenuButton,
-                    children![
+                    children![(
                         Text::new("Back to main menu"),
-                        TextColor(Color::from(WHITE_SMOKE))
-                    ],
+                        TextColor(Color::from(BLACK))
+                    )],
                 )
             ]
         )],

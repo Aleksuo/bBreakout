@@ -1,4 +1,4 @@
-use bevy::{color::palettes::css::WHITE_SMOKE, prelude::*};
+use bevy::{color::palettes::css::BLACK, prelude::*};
 
 use crate::{
     game_state::{GameState, OnGameState},
@@ -42,10 +42,10 @@ fn spawn_menu(mut commands: Commands) {
             children![(
                 MenuButton,
                 SettingsMenuAction::MainMenu,
-                children![
+                children![(
                     Text::new("Back to main menu"),
-                    TextColor(Color::from(WHITE_SMOKE))
-                ]
+                    TextColor(Color::from(BLACK))
+                )]
             )]
         )],
     ));

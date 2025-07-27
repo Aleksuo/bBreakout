@@ -1,14 +1,14 @@
 use bevy::{
-    color::palettes::css::{BLACK, GRAY, WHITE_SMOKE},
+    color::palettes::css::{GRAY, WHITE_SMOKE},
     prelude::*,
 };
 
 use crate::audio::PlaySoundEvent;
 
-type MenuButtonBorderInteractionQuery<'w, 's> = Query<
+type MenuButtonBackgroundColorInteractionQuery<'w, 's> = Query<
     'w,
     's,
-    (&'static Interaction, &'static mut BorderColor),
+    (&'static Interaction, &'static mut BackgroundColor),
     (Changed<Interaction>, With<MenuButton>),
 >;
 
@@ -32,8 +32,7 @@ fn button_node() -> Node {
 #[derive(Component)]
 #[require(
     Button,
-    BackgroundColor = BLACK,
-    BorderColor = WHITE_SMOKE,
+    BackgroundColor = WHITE_SMOKE,
     Node = button_node()
 )]
 pub struct MenuButton;
@@ -48,9 +47,11 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-fn menu_button_border_interaction(mut interaction_query: MenuButtonBorderInteractionQuery) {
-    for (interaction, mut border_color) in interaction_query.iter_mut() {
-        border_color.0 = match interaction {
+fn menu_button_border_interaction(
+    mut interaction_query: MenuButtonBackgroundColorInteractionQuery,
+) {
+    for (interaction, mut background_color) in interaction_query.iter_mut() {
+        background_color.0 = match interaction {
             Interaction::Hovered => Color::from(GRAY),
             Interaction::Pressed => Color::from(GRAY),
             Interaction::None => Color::from(WHITE_SMOKE),
