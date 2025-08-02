@@ -15,8 +15,5 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Aleksuo/bBreakout.git"
-  },
-  "dependencies": {
-    "concurrently": "^9.2.0"
   }
 }
