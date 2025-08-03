@@ -32,6 +32,7 @@
 
 If you only want to run the game natively:
 1. Install the latest Rust version (via [rustup](https://rustup.rs/))
+2. Install [the Bevy OS Dependencies](https://bevy.org/learn/quick-start/getting-started/setup/) depending on your OS
 
 Optionally, if you also want to run the webapp:
 
