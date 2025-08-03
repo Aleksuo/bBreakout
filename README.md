@@ -9,6 +9,10 @@
 
 ![Game gif](samples/bbreakout_sample.gif)
 
+## Controls
+- Move left: A
+- Move right: D
+
 ## Features
 
 ## Installation
