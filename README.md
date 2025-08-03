@@ -64,4 +64,4 @@
 
 ## License
 
-TODO
+This project is dual-licensed under the terms of MIT License (MIT) or the Apache License 2.0 (Apache-2.0). See the [LICENSE-MIT](./LICENSE-MIT) and [LICENSE-APACHE](./LICENSE-APACHE) files for details.
