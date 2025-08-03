@@ -27,32 +27,64 @@
   - Game state
   - Game over screen
 - Playable in the browser utilizing wasm
-## Installation
 
-1. Install Rust (via [rustup](https://rustup.rs/))
-2. Install Node.js (via [nodejs.org](https://nodejs.org/))
-3. Install project dependencies:
+## Prerequisites
+
+If you only want to run the game natively:
+1. Install the latest Rust version (via [rustup](https://rustup.rs/))
+
+Optionally, if you also want to run the webapp:
+
+2. Install Node.js 22 (via [nodejs.org](https://nodejs.org/))
+3. Install project dependencies (run in root):
    ```bash
-   npm install
+   npm ci
    ```
 ## Running the Project
 
-- To run the web application:
+This project uses npm scripts to orchestrate the webapp builds. You can either run the project using the root npm scripts or cargo if you want to just run the game natively.
+
+### Cargo
+
+Go to the `bevy-breakout` folder and run the game using cargo:
+
+```bash
+cd bevy-breakout && cargo run
+``` 
+Use the `--release` -argument to run the release build.
+
+#### NPM
+These scripts are available in the project root:
+
+#### `dev:webapp`
+Start the webapp in development mode:
   ```bash
   npm run dev:webapp
   ```
+  > Note: This also builds and generates the wasm bindings and copies all the assets to the webapp directory. The first time you run this will take some time. Also there is no auto watch for the game wasm, this is meant just for developing the website template.
 
-- To run the Bevy game:
+#### `dev:game`
+Run the bevy game with debug build:
+
   ```bash
   npm run dev:game
   ```
 
-## Building for GitHub Pages deployment
-
-- To build the web application for GitHub Pages:
-  ```bash
-  npm run dist:gh-pages
-  ```
+#### `bundle-wasm`
+Run the wasm target build, generate bindings and copy the artifacts to webapp:
+```bash
+npm run bundle-wasm
+```
+#### `copy-assets`
+Copy the assets from the game to be used by the webapp:
+```bash
+npm run copy-assets
+```
+#### `dist:gh-pages`
+Builds the bundle that is used for GitHub Pages deployment:
+```bash
+npm run dist:gh-pages
+```
 
 ## Made with
 [![Rust](https://img.shields.io/badge/rust-%23000000.svg?style=for-the-badge&logo=rust&logoColor=white)](https://www.rust-lang.org/)

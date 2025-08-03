@@ -6,7 +6,7 @@
     "bevy-breakout"
   ],
   "scripts": {
-    "dev:webapp": "npm run start --workspace=webapp",
+    "dev:webapp": "npm run bundle-wasm && npm run copy-assets && npm run start --workspace=webapp",
     "dev:game": "npm run start --workspace=bevy-breakout",
     "bundle-wasm": "npm run bundle-wasm --workspace=bevy-breakout",
     "copy-assets": "node ./scripts/copy-assets.mjs",
