@@ -14,7 +14,19 @@
 - Move right: D
 
 ## Features
-
+- Gameplay mechanics:
+  - Score based on destroyed tiles
+  - Three lives that get depleted when the ball hits the bottom wall
+  - Simple ball physics
+  - Simple particle system that is used to spawn a trail for the ball
+  - A ball speedup system that is also indicated by the color of the ball trail
+  - Simple audio system for sound effects
+- Multiple game states:
+  - Main menu screen
+  - Settings screen with global volume control
+  - Game state
+  - Game over screen
+- Playable in the browser utilizing wasm
 ## Installation
 
 1. Install Rust (via [rustup](https://rustup.rs/))
